@@ -25,14 +25,14 @@ import edu.emory.mathcs.nlp.component.eval.AccuracyEval;
  * Left-to-right tagging state.
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public abstract class LRState<N> extends NLPState<N>
+public abstract class L2RState<N> extends NLPState<N>
 {
 	protected BiFunction<N,String,String> setter;
 	protected Function<N,String> getter;
 	protected String[] gold;
 	protected int index;
 	
-	public LRState(N[] nodes, Function<N,String> getter, BiFunction<N,String,String> setter)
+	public L2RState(N[] nodes, Function<N,String> getter, BiFunction<N,String,String> setter)
 	{
 		super(nodes);
 		this.getter = getter;
@@ -41,7 +41,7 @@ public abstract class LRState<N> extends NLPState<N>
 	}
 	
 	@Override
-	public void clearGold()
+	public void clearGoldLabels()
 	{
 		gold = Arrays.stream(nodes).map(n -> setter.apply(n, null)).toArray(String[]::new);
 	}

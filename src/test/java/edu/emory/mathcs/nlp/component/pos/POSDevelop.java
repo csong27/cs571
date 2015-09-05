@@ -20,13 +20,11 @@ import java.util.function.Consumer;
 
 import org.junit.Test;
 
-import edu.emory.mathcs.nlp.common.collection.node.POSNode;
-import edu.emory.mathcs.nlp.common.reader.POSIndex;
-import edu.emory.mathcs.nlp.common.reader.TSVReader;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.component.eval.AccuracyEval;
 import edu.emory.mathcs.nlp.component.eval.Eval;
 import edu.emory.mathcs.nlp.component.util.NLPFlag;
+import edu.emory.mathcs.nlp.component.util.TSVReader;
 import edu.emory.mathcs.nlp.learn.model.StringModel;
 import edu.emory.mathcs.nlp.learn.sgd.StochasticGradientDescent;
 import edu.emory.mathcs.nlp.learn.sgd.adagrad.MultinomialAdaGradHinge;
@@ -55,13 +53,13 @@ public class POSDevelop
 		TSVReader<POSNode> reader = new TSVReader<>(new POSIndex(0,1));
 		
 		// collect ambiguity classes from the training data
-		System.out.println("Collecting ambiguity classes");
+		System.out.println("Collecting ambiguity classes.");
 		AmbiguityClassMap ambi = new AmbiguityClassMap();
 		iterate(reader, train_file, nodes -> ambi.addAll(nodes));
 		ambi.expand(ambiguity_class_threshold);
 		
 		// collect training instances from the training data
-		System.out.println("Collecting training instances");
+		System.out.println("Collecting training instances.");
 		StringModel model = new StringModel(new MultinomialWeightVector());
 		POSTagger<POSNode> tagger = new POSTagger<>(NLPFlag.TRAIN, model);
 		tagger.setAmbiguityClassMap(ambi);
