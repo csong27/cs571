@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 
+import edu.emory.mathcs.nlp.learn.sgd.perceptron.MultinomialPerceptron;
 import org.junit.Test;
 
 import edu.emory.mathcs.nlp.common.util.FileUtils;
@@ -41,8 +42,8 @@ public class POSDevelop
 	@Test
 	public void develop() throws IOException
 	{
-		final String  root = "/Users/jdchoi/Documents/Data/experiments/wsj/pos/";
-		final boolean average = false;
+		final String  root = "C:/Users/Song/Course/571/";
+		final boolean average = true;
 		final double  ambiguity_class_threshold = 0.4;
 		final double  learning_rate = 0.02;
 		final double  ridge = 0.1;
@@ -79,7 +80,7 @@ public class POSDevelop
 			sgd.train(model.getInstanceList());
 			eval.clear();
 			iterate(reader, developFiles, nodes -> tagger.process(nodes));
-			System.out.printf("%3d: %5.2f\n", i, eval.score());
+			System.out.printf("%5.2f\n", eval.score());
 		}
 	}
 	
