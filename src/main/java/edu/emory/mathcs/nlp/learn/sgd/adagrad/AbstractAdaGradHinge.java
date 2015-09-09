@@ -46,4 +46,10 @@ public abstract class AbstractAdaGradHinge extends StochasticGradientDescent
 	{
 		return learning_rate / (ridge + Math.sqrt(diagonals.get(label, featureIndex)));
 	}
+
+	protected double getGradientL2(int label, int featureIndex, double lambda)
+	{
+		return learning_rate * (1 - lambda * weight_vector.get(label, featureIndex))
+				/ (ridge + Math.sqrt(diagonals.get(label, featureIndex)));
+	}
 }

@@ -82,7 +82,7 @@ public abstract class WeightVector implements Serializable
 	{
 		weight_vector[indexOf(label, featureIndex)] += value;
 	}
-	
+
 	public void update(Vector x, int label, double gradient)
 	{
 		for (IndexValuePair p : x)

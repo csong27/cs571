@@ -43,7 +43,7 @@ public class POSDevelop
 	public void develop() throws IOException
 	{
 		final String  root = "C:/Users/Song/Course/571/";
-		final boolean average = true;
+		final boolean average = false;
 		final double  ambiguity_class_threshold = 0.4;
 		final double  learning_rate = 0.02;
 		final double  ridge = 0.1;
@@ -70,7 +70,10 @@ public class POSDevelop
 		model.vectorize(label_cutoff, feature_cutoff);
 		
 		// train the statistical model using the development data
+
 		StochasticGradientDescent sgd = new MultinomialAdaGradHinge(model.getWeightVector(), average, learning_rate, ridge);
+//		StochasticGradientDescent sgd = new MultinomialPerceptron(model.getWeightVector(), average, learning_rate);
+
 		Eval eval = new AccuracyEval();
 		tagger.setFlag(NLPFlag.EVALUATE);
 		tagger.setEval(eval);
