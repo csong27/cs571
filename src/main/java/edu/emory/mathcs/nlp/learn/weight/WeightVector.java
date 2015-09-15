@@ -95,7 +95,7 @@ public abstract class WeightVector implements Serializable
 		for (IndexValuePair p : x)
 			add(label, p.getIndex(), gradient.apply(label, p.getIndex()) * p.getValue());
 	}
-	
+
 	/** Fills this weight vector with the specific value. */
 	public void fill(float value)
 	{
