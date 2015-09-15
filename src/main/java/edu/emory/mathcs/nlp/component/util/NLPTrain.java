@@ -102,13 +102,13 @@ public abstract class NLPTrain<N,L,S extends NLPState<N,L>>
 		float[][] prevWeight = new float[size][];
 		float[][] bestWeight = new float[size][];
 		double bestScore = 0, currScore = 0, prevScore;
-		
+
 		for (int boot=0; ; boot++)
 		{
 			BinUtils.LOG.info((boot == 0) ? "\nTraining:\n\n" : String.format("\nBootstrapping: %d\n\n", boot));
 			component.setFlag(boot == 0 ? NLPFlag.TRAIN : NLPFlag.BOOTSTRAP);
 			iterate(reader, trainFiles, nodes -> component.process(nodes));
-			
+
 			component.setFlag(NLPFlag.EVALUATE);
 			prevScore = currScore;
 			currScore = train(reader, developFiles, component, configuration);

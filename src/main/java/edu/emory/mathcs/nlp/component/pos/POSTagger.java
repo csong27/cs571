@@ -78,7 +78,7 @@ public class POSTagger<N extends POSNode> extends NLPComponent<N,String,POSState
 	@Override
 	protected void addInstance(String label, StringVector vector)
 	{
-		System.out.println(label+" "+vector.toString());
+//		System.out.println(label+" "+vector.toString());
 		models[0].addInstance(new StringInstance(label, vector));
 	}
 }

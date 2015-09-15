@@ -151,14 +151,17 @@ public abstract class NLPComponent<N,L,S extends NLPState<N,L>> implements Seria
 		S state = createState(nodes);
 		feature_template.setState(state);
 		if (!isDecode()) state.clearGoldLabels();
-		
+
 		while (!state.isTerminate())
 		{
 			StringVector vector = extractFeatures(state);
+
 			if (isTrainOrBootstrap()) addInstance(state.getGoldLabel(), vector);
 			L label = getLabel(state, vector);
 			state.setLabel(label);
+			
 			state.next();
+
 		}
 		
 		if (isEvaluate()) state.evaluate(eval);
