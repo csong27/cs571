@@ -1,12 +1,12 @@
 /**
  * Copyright 2015, Emory University
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,12 +31,12 @@ public class POSTagger<N extends POSNode> extends NLPComponent<N,String,POSState
 {
 	private static final long serialVersionUID = -7926217238116337203L;
 	private AmbiguityClassMap ambiguity_class_map;
-	
+
 	public POSTagger(StringModel model)
 	{
 		super(new StringModel[]{model});
 	}
-	
+
 //	============================== LEXICONS ==============================
 
 	@Override
@@ -50,19 +50,19 @@ public class POSTagger<N extends POSNode> extends NLPComponent<N,String,POSState
 	{
 		out.writeObject(ambiguity_class_map);
 	}
-	
+
 	public AmbiguityClassMap getAmbiguityClassMap()
 	{
 		return ambiguity_class_map;
 	}
-	
+
 	public void setAmbiguityClassMap(AmbiguityClassMap map)
 	{
 		ambiguity_class_map = map;
 	}
-	
+
 //	============================== PROCESS ==============================
-	
+
 	@Override
 	protected POSState<N> createState(N[] nodes)
 	{
@@ -78,7 +78,6 @@ public class POSTagger<N extends POSNode> extends NLPComponent<N,String,POSState
 	@Override
 	protected void addInstance(String label, StringVector vector)
 	{
-//		System.out.println(label+" "+vector.toString());
 		models[0].addInstance(new StringInstance(label, vector));
 	}
 }

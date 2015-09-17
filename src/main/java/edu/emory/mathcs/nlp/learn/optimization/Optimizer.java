@@ -13,16 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package edu.emory.mathcs.nlp.component.util;
+package edu.emory.mathcs.nlp.learn.optimization;
+
+import java.util.List;
+
+import edu.emory.mathcs.nlp.learn.util.Instance;
+import edu.emory.mathcs.nlp.learn.weight.WeightVector;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
-public enum NLPFlag
+public abstract class Optimizer
 {
-	COLLECT,
-	TRAIN,
-	AGGREGATE,
-	EVALUATE,
-	DECODE;
+	protected WeightVector weight_vector;
+	private OptimizerType type;
+	
+	public Optimizer(WeightVector weightVector, OptimizerType type)
+	{
+		weight_vector = weightVector;
+		this.type = type;
+	}
+	
+	public OptimizerType getType()
+	{
+		return type;
+	}
+	
+	public abstract void train(List<Instance> instances);
 }

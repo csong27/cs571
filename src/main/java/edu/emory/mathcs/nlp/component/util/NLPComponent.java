@@ -1,12 +1,12 @@
 /**
  * Copyright 2015, Emory University
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,16 +36,16 @@ public abstract class NLPComponent<N,L,S extends NLPState<N,L>> implements Seria
 	protected StringModel[] models;
 	protected NLPFlag flag;
 	protected Eval eval;
-	
+
 //	============================== CONSTRUCTORS ==============================
-	
+
 	public NLPComponent(StringModel[] models)
 	{
 		setModels(models);
 	}
-	
+
 //	============================== SERIALIZATION ==============================
-	
+
 	@SuppressWarnings("unchecked")
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
 	{
@@ -53,29 +53,29 @@ public abstract class NLPComponent<N,L,S extends NLPState<N,L>> implements Seria
 		models = (StringModel[])in.readObject();
 		readLexicons(in);
 	}
-	
+
 	private void writeObject(ObjectOutputStream out) throws IOException
 	{
 		out.writeObject(feature_template);
 		out.writeObject(models);
 		writeLexicons(out);
 	}
-	
+
 	protected abstract void readLexicons (ObjectInputStream in) throws IOException, ClassNotFoundException;
 	protected abstract void writeLexicons(ObjectOutputStream out) throws IOException;
-	
+
 //	============================== MODELS ==============================
-	
+
 	public StringModel[] getModels()
 	{
 		return models;
 	}
-	
+
 	public void setModels(StringModel[] model)
 	{
 		this.models = model;
 	}
-	
+
 //	============================== FEATURE ==============================
 
 	public FeatureTemplate<N,S> getFeatureTemplate()
@@ -87,65 +87,65 @@ public abstract class NLPComponent<N,L,S extends NLPState<N,L>> implements Seria
 	{
 		feature_template = template;
 	}
-	
+
 //	============================== FLAG ==============================
-	
+
 	public NLPFlag getFlag()
 	{
 		return flag;
 	}
-	
+
 	public void setFlag(NLPFlag flag)
 	{
 		this.flag = flag;
 	}
-	
+
 	public boolean isTrain()
 	{
 		return flag == NLPFlag.TRAIN;
 	}
-	
-	public boolean isBootstrap()
+
+	public boolean isAggregate()
 	{
-		return flag == NLPFlag.BOOTSTRAP;
+		return flag == NLPFlag.AGGREGATE;
 	}
-	
-	public boolean isTrainOrBootstrap()
+
+	public boolean isTrainOrAggregate()
 	{
-		return isTrain() || isBootstrap();
+		return isTrain() || isAggregate();
 	}
-	
+
 	public boolean isDecode()
 	{
 		return flag == NLPFlag.DECODE;
 	}
-	
+
 	public boolean isEvaluate()
 	{
 		return flag == NLPFlag.EVALUATE;
 	}
-	
+
 //	============================== EVALUATOR ==============================
 
 	public Eval getEval()
 	{
 		return eval;
 	}
-	
+
 	public void setEval(Eval eval)
 	{
 		this.eval = eval;
 	}
-	
+
 //	============================== PROCESS ==============================
-	
+
 	/** @return the processing state for the input nodes. */
 	protected abstract S createState(N[] nodes);
 	/** @return the gold-standard label for training; otherwise, the predicted label. */
 	protected abstract L getLabel(S state, StringVector vector);
 	/** Adds a training instance (label, x) to the statistical model. */
 	protected abstract void addInstance(L label, StringVector vector);
-	
+
 	public void process(N[] nodes)
 	{
 		S state = createState(nodes);
@@ -155,18 +155,15 @@ public abstract class NLPComponent<N,L,S extends NLPState<N,L>> implements Seria
 		while (!state.isTerminate())
 		{
 			StringVector vector = extractFeatures(state);
-
-			if (isTrainOrBootstrap()) addInstance(state.getGoldLabel(), vector);
+			if (isTrainOrAggregate()) addInstance(state.getGoldLabel(), vector);
 			L label = getLabel(state, vector);
 			state.setLabel(label);
-			
 			state.next();
-
 		}
-		
+
 		if (isEvaluate()) state.evaluate(eval);
 	}
-	
+
 	/** @return the vector consisting of all features extracted from the state. */
 	protected StringVector extractFeatures(S state)
 	{
