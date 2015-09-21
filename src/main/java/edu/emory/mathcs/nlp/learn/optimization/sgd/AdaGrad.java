@@ -85,7 +85,7 @@ public class AdaGrad extends StochasticGradientDescent
 	{
 		return learning_rate / (epsilon + Math.sqrt(diagonals.get(label, featureIndex)));
 	}
-	
+
 	@Override
 	public String toString()
 	{
