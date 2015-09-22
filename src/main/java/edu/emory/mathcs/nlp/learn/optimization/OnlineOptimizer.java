@@ -105,7 +105,7 @@ public abstract class OnlineOptimizer extends Optimizer
  	protected int bestHingeMultinomial(Instance instance)
 	{
 		double[] scores = weight_vector.scores(instance.getVector());
-		scores[instance.getLabel()] -= 0.75;
+		scores[instance.getLabel()] -= 1;
 		return DSUtils.maxIndex(scores);
 	}
 }
