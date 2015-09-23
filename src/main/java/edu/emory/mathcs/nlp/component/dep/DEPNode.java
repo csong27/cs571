@@ -340,7 +340,7 @@ public class DEPNode extends POSNode implements Comparable<DEPNode>
 	
 	/**
 	 * Get the list of all the dependency nodes of the node by labels set.
-	 * @param label labels set
+	 * @param labels labels set
 	 * @return list of all the dependency nodes of the node by labels set
 	 */
 	public List<DEPNode> getDependentListByLabel(Set<String> labels)
@@ -358,7 +358,7 @@ public class DEPNode extends POSNode implements Comparable<DEPNode>
 	
 	/**
 	 * Get the list of all the dependency nodes of the node by label pattern.
-	 * @param label label pattern
+	 * @param pattern label pattern
 	 * @return list of all the dependency nodes of the node by label pattern
 	 */
 	public List<DEPNode> getDependentListByLabel(Pattern pattern)
@@ -393,7 +393,7 @@ public class DEPNode extends POSNode implements Comparable<DEPNode>
 	
 	/**
 	 * Get the list of all the left dependency nodes of the node by label pattern.
-	 * @param label label pattern
+	 * @param pattern label pattern
 	 * @return list of all the left dependency nodes of the node by label pattern
 	 */
 	public List<DEPNode> getLeftDependentListByLabel(Pattern pattern)
@@ -428,7 +428,7 @@ public class DEPNode extends POSNode implements Comparable<DEPNode>
 	
 	/**
 	 * Get the list of all the right dependency nodes of the node by label pattern.
-	 * @param label label pattern
+	 * @param pattern label pattern
 	 * @return list of all the right dependency nodes of the node by label pattern
 	 */
 	public List<DEPNode> getRightDependentListByLabel(Pattern pattern)
