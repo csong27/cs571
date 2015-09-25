@@ -140,7 +140,7 @@ public abstract class NLPTrain<N,L,S extends NLPState<N,L>>
 			BinUtils.LOG.info(models[i].trainInfo()+"\n");
 
 			if (optimizers[i].getType() == OptimizerType.ONLINE)
-				score = myTrainOnline(reader, developFiles, component, optimizers[i], models[i]);
+				score = trainOnline(reader, developFiles, component, optimizers[i], models[i]);
 			else
 				score = trainOneVsAll(reader, developFiles, component, optimizers[i], models[i]);
 		}
