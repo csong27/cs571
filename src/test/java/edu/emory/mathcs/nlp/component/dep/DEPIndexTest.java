@@ -19,13 +19,14 @@ import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.component.util.reader.TSVIndex;
 import edu.emory.mathcs.nlp.component.util.reader.TSVReader;
+import org.junit.Test;
 
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
 public class DEPIndexTest
 {
-//	@Test
+	@Test
 	public void test() throws Exception
 	{
 		TSVIndex<DEPNode> index = new DEPIndex(1, 2, 3, 4, 5, 6);

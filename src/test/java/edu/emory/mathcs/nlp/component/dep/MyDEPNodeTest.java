@@ -5,10 +5,14 @@ package edu.emory.mathcs.nlp.component.dep;
  */
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.*;
 
+import edu.emory.mathcs.nlp.common.util.FileUtils;
+import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.component.util.feature.Field;
 import org.junit.Test;
 
@@ -51,8 +55,9 @@ public class MyDEPNodeTest {
         node4.addDependent(node3, "det");
         assertEquals(node4, node1.getRightNearestSibling());
         assertEquals(null, node1.getLeftNearestSibling());
-        // Print the siblings for another example
-//        DEPNode[] nodes = getExample();
+//         Print the siblings for another example
+        DEPNode[] nodes = getExample();
+        System.out.println(nodes.length);
 //        String word;
 //        System.out.println("Sibling Test");
 //        for(DEPNode node: nodes) {
@@ -141,6 +146,26 @@ public class MyDEPNodeTest {
         assertEquals(">car", node2.getRightSubcategorization(Field.word_form));
         assertEquals("<He", node2.getLeftSubcategorization(Field.word_form));
 
+    }
+
+    @Test
+    public void readerTest(){
+        List<String> trainFiles = FileUtils.getFileList("wsj/dep/trn", "*");
+        TSVReader<DEPNode> reader = new TSVReader<>(new DEPIndex(1, 2, 3, 4, 5, 6));
+        DEPNode[] nodes;
+        long start = System.currentTimeMillis();
+        for (String inputFile : trainFiles)
+        {
+            reader.open(IOUtils.createFileInputStream(inputFile));
+            try
+            {
+                while ((nodes = reader.next()) != null)
+                    assertNotNull(nodes);
+            }
+            catch (IOException e) {e.printStackTrace();}
+        }
+        long end = System.currentTimeMillis();
+        System.out.println("Reading training data take: " + (end - start) / 1000f + "s");
     }
 
 }
