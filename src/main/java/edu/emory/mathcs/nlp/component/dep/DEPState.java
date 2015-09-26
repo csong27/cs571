@@ -1,6 +1,5 @@
 package edu.emory.mathcs.nlp.component.dep;
 import edu.emory.mathcs.nlp.common.util.IOUtils;
-import edu.emory.mathcs.nlp.common.util.Joiner;
 import edu.emory.mathcs.nlp.component.util.eval.Eval;
 import edu.emory.mathcs.nlp.component.util.feature.Source;
 import edu.emory.mathcs.nlp.component.util.reader.TSVIndex;
@@ -16,6 +15,7 @@ public class DEPState<N extends DEPNode> extends NLPState<N, String> {
     static final String SHIFT = "SHIFT";
     static final String LEFTARC = "LEFTARC";
     static final String RIGHTARC = "RIGHTARC";
+    static final String DELIM = ":";
 
     private DEPArc[] goldDepLabel;
     private Stack<N> nodeStack;
@@ -23,7 +23,6 @@ public class DEPState<N extends DEPNode> extends NLPState<N, String> {
     //move and dependency label, combined as the training label
     private String move;
     private String depLabel;
-    private String label;
 
     public DEPState(N[] nodes){
         super(nodes);
@@ -88,7 +87,9 @@ public class DEPState<N extends DEPNode> extends NLPState<N, String> {
 
     // Not sure if this is useful
     public String setLabel(String label){
-        this.label = label;
+        String[] moveLabel = label.split(DELIM);
+        this.move = moveLabel[0];
+        this.depLabel = moveLabel[1];
         return label;
     }
 
@@ -123,9 +124,7 @@ public class DEPState<N extends DEPNode> extends NLPState<N, String> {
     }
 
     private String getMoveLabel(String move, String depLabel){
-        this.move = move;   //set move for this state
-        this.depLabel = depLabel;   //set dependency label for this state
-        return move + ":" + depLabel;
+        return move + DELIM + depLabel;
     }
 
     private boolean reduceCondition(DEPNode stackWord, DEPNode inputWord, DEPNode inputHead){

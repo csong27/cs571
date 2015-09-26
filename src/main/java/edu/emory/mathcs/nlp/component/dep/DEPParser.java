@@ -59,12 +59,13 @@ public class DEPParser<N extends DEPNode> extends NLPComponent<N,String,DEPState
     {
         DEPState<N> state = createState(nodes);
         if (!isDecode()) state.clearGoldLabels();
-
+        StringVector vector;
+        String label;
         while (!state.isTerminate())
         {
-            StringVector vector = extractFeatures(state);
+            vector = extractFeatures(state);
             if (isTrainOrAggregate()) addInstance(state.getGoldLabel(), vector);
-            String label = getLabel(state, vector);
+            label = getLabel(state, vector);
             state.setLabel(label);
             state.next();
         }
