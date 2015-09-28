@@ -12,6 +12,8 @@ import edu.emory.mathcs.nlp.learn.weight.MultinomialWeightVector;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Random;
+import java.util.Set;
 
 /**
  * Created by Song on 9/23/2015.
@@ -39,6 +41,35 @@ public class DEPParser<N extends DEPNode> extends NLPComponent<N,String,DEPState
     protected String getLabel(DEPState<N> state, StringVector vector)
     {
         return isTrain() ? state.getGoldLabel() : models[0].predictBest(vector).getLabel();
+    }
+
+    private String getAmbiguousLabel(String best, Set<String> zeroCostLabels){
+        if(zeroCostLabels.contains(best))
+            return best;
+        else
+            return randomElement(zeroCostLabels);
+    }
+
+    private String randomElement(Set<String> set){
+        int size = set.size();
+        int item = new Random().nextInt(size);
+        int i = 0;
+        for(String string : set)
+        {
+            if (i == item) return string;
+            i = i + 1;
+        }
+        return null;
+    }
+
+    private String getExploreLabel(DEPState<N> state, StringVector vector)
+    {
+        String best = models[0].predictBest(vector).getLabel();
+        Set<String> zeroCostLabels = state.getDynamicGoldMoveLabel();
+        if(Math.random() > 0.1)
+            return best;
+        else
+            return getAmbiguousLabel(best, zeroCostLabels);
     }
 
     @Override
@@ -71,25 +102,5 @@ public class DEPParser<N extends DEPNode> extends NLPComponent<N,String,DEPState
         }
 
         if (isEvaluate()) state.evaluate(eval);
-    }
-
-    public static void main(String[] args) throws Exception{
-        TSVIndex<DEPNode> index = new DEPIndex(1, 2, 3, 4, 5, 6);
-        TSVReader<DEPNode> reader = new TSVReader<>(index);
-        reader.open(IOUtils.createFileInputStream("src/main/resources/dat/wsj_0001.dep"));
-        DEPNode[] nodes = reader.next();
-        DEPParser<DEPNode> parser = new DEPParser<>(new StringModel(new MultinomialWeightVector()));
-        DEPFeatureTemplate<DEPNode> featureTemplate = new DEPFeatureTemplate<>();
-        parser.setFeatureTemplate(featureTemplate);
-        DEPState<DEPNode> state = new DEPState<>(nodes);
-        StringVector vector;
-        String label;
-        while(!state.isTerminate()){
-            label = state.getGoldMoveLabel();
-            vector = parser.extractFeatures(state);
-            StringInstance instance = new StringInstance(label, vector);
-            System.out.println(instance);
-            state.next();
-        }
     }
 }

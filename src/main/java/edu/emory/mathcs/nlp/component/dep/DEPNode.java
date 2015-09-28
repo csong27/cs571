@@ -15,6 +15,7 @@
  */
 package edu.emory.mathcs.nlp.component.dep;
 
+import edu.emory.mathcs.nlp.component.util.feature.Direction;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -606,14 +607,14 @@ public class DEPNode extends POSNode implements Comparable<DEPNode>
 	 * @param direction DirectionType of l, r, a 
 	 * @return "0" - no dependents, "<" - left dependents, ">" - right dependents, "<>" - left and right dependents. 
 	 */
-	public String getValency(DirectionType direction)
+	public String getValency(Direction direction)
 	{
 		switch (direction)
 		{
-		case  l: return getLeftValency();
-		case  r: return getRightValency();
-		case  a: return getLeftValency()+"-"+getRightValency();
-		default: return null;
+			case  left: return getLeftValency();
+			case  right: return getRightValency();
+			case  all: return getLeftValency()+"-"+getRightValency();
+			default: return null;
 		}
 	}
 	
@@ -661,18 +662,18 @@ public class DEPNode extends POSNode implements Comparable<DEPNode>
 	 * @param field Field of tag feature
 	 * @return "< {@code TagFeature}" for left sub-categorization, "> {@code TagFeature}" for right-categorization, and {@code null} if not exist
 	 */
-	public String getSubcategorization(DirectionType direction, Field field)
+	public String getSubcategorization(Direction direction, Field field)
 	{
 		switch (direction)
 		{
-		case l: return getLeftSubcategorization (field);
-		case r: return getRightSubcategorization(field);
-		case a:
-			String left = getLeftSubcategorization(field);
-			if (left == null) return getRightSubcategorization(field);
-			String right = getRightSubcategorization(field);
-			return  (right == null) ? left : left+right;
-		default: return null; 
+			case left: return getLeftSubcategorization (field);
+			case right: return getRightSubcategorization(field);
+			case all:
+				String left = getLeftSubcategorization(field);
+				if (left == null) return getRightSubcategorization(field);
+				String right = getRightSubcategorization(field);
+				return  (right == null) ? left : left+right;
+			default: return null;
 		}
 	}
 	

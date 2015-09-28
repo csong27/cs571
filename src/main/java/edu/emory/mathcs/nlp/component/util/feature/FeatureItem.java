@@ -28,19 +28,6 @@ public class FeatureItem<T> implements Serializable
 	public int       window;
 	public Field field;
 	public T         value;
-	
-	public FeatureItem(int window, Field field)
-	{
-		this.window = window;
-		this.field  = field;
-	}
-	
-	public FeatureItem(int window, Field field, T value)
-	{
-		this.window = window;
-		this.field  = field;
-		this.value  = value;
-	}
 
 	public FeatureItem(Source source, Field field)
 	{
@@ -53,5 +40,39 @@ public class FeatureItem<T> implements Serializable
 		this.source = source;
 		this.field  = field;
 		this.value  = value;
+	}
+
+	public FeatureItem(int window, Field field)
+	{
+		this(null, null, window, field, null);
+	}
+
+	public FeatureItem(int window, Field field, T value)
+	{
+		this(null, null, window, field, value);
+	}
+
+	public FeatureItem(Source source, int window, Field field)
+	{
+		this(source, null, window, field, null);
+	}
+
+	public FeatureItem(Source source, int window, Field field, T value)
+	{
+		this(source, null, window, field, value);
+	}
+
+	public FeatureItem(Source source, Relation relation, int window, Field field)
+	{
+		this(source, relation, window, field, null);
+	}
+
+	public FeatureItem(Source source, Relation relation, int window, Field field, T value)
+	{
+		this.source   = source;
+		this.relation = relation;
+		this.window   = window;
+		this.field    = field;
+		this.value    = value;
 	}
 }

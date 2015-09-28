@@ -5,7 +5,8 @@ import edu.emory.mathcs.nlp.component.util.feature.Source;
 import edu.emory.mathcs.nlp.component.util.reader.TSVIndex;
 import edu.emory.mathcs.nlp.component.util.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.util.state.NLPState;
-import java.util.Stack;
+
+import java.util.*;
 
 /**
  * Created by Song on 9/23/2015.
@@ -19,13 +20,15 @@ public class DEPState<N extends DEPNode> extends NLPState<N, String> {
 
     private DEPArc[] goldDepLabel;
     private Stack<N> nodeStack;
-    private int inputIndex = 0, inputSize;
+    private int inputIndex;
+    private int inputSize;
     //move and dependency label, combined as the training label
     private String move;
     private String depLabel;
 
     public DEPState(N[] nodes){
         super(nodes);
+        inputIndex = 0;
         inputSize = nodes.length;
         nodeStack = new Stack<>();
         //add root to stack to initialize
@@ -34,12 +37,20 @@ public class DEPState<N extends DEPNode> extends NLPState<N, String> {
     }
 
 
-    public N getNode(Source s){
-        switch (s){
-            case i: return getStackWord();
-            case j: return getInputWord();
-            default: return null;
+    public N getStack(int window) {
+        return getNode(getStackWord().getID() - 1, window);
+    }
+
+    public N getInput(int window) {
+        return getNode(inputIndex, window);
+    }
+
+    public N peekStack(int window)
+    {
+        if(window < nodeStack.size()){
+            return nodeStack.elementAt(nodeStack.size() - window - 1);
         }
+        return null;
     }
 
     private void initGoldDepLabel(){
@@ -65,13 +76,23 @@ public class DEPState<N extends DEPNode> extends NLPState<N, String> {
         if(move != null){
             DEPNode stackWord = getStackWord();
             DEPNode inputWord = getInputWord();
-            switch (move){
-                case LEFTARC:   stackWord.setHead(inputWord, depLabel); reduce(); break;
-                case RIGHTARC:  inputWord.setHead(stackWord, depLabel); shift(); break;
-                case REDUCE:    reduce(); break;
-                case SHIFT:     shift(); break;
-                default: break;
+            if(move.equals(LEFTARC)){
+                if(stackWord != DEPNode.ROOT && !inputWord.isDependentOf(stackWord)) {
+                    stackWord.setHead(inputWord, depLabel);
+                    reduce();
+                }
+                else shift();
             }
+            else if(move.equals(RIGHTARC)){
+                if(!stackWord.isDependentOf(inputWord))
+                    inputWord.setHead(stackWord, depLabel);
+                shift();
+            }
+            else if(move.equals(REDUCE)){
+                if(nodeStack.size() == 1) shift();
+                else reduce();
+            }
+            else shift();
         }
     }
 
@@ -140,13 +161,87 @@ public class DEPState<N extends DEPNode> extends NLPState<N, String> {
         return false;
     }
 
+    public Set<String> getDynamicGoldMoveLabel(){
+        DEPNode stackWord = getStackWord(),
+                inputWord = getInputWord();
+        //the ground truth
+        DEPArc  stackWordHeadLabel = getHeadNodeByIndex(stackWord.getID() - 1),
+                inputWordHeadLabel = getHeadNodeByIndex(inputWord.getID() - 1);
+        Set<String> zeroCostLabels = new HashSet<>();
+        if(stackWordHeadLabel != null && !isLeftArcCostly(inputWord, stackWord, stackWordHeadLabel.getNode()))
+            zeroCostLabels.add(getMoveLabel(LEFTARC, stackWordHeadLabel.getLabel()));
+        if(!isRightArcCostly(inputWord, stackWord, inputWordHeadLabel.getNode()))
+            zeroCostLabels.add(getMoveLabel(RIGHTARC, inputWordHeadLabel.getLabel()));
+        if(!isReduceCostly(stackWord))
+            zeroCostLabels.add(getMoveLabel(REDUCE, null));
+        if(!isShiftCostly(inputWord, inputWordHeadLabel.getNode()))
+            zeroCostLabels.add(getMoveLabel(SHIFT, null));
 
-    public void evaluate(Eval eval){
-        evaluateTokens((DEPAccuracyEval)eval);
+        return zeroCostLabels;
     }
 
-    public void evaluateTokens(DEPAccuracyEval eval)
-    {
+    private boolean isLeftArcCostly(DEPNode inputWord, DEPNode stackWord, DEPNode stackWordHead){
+        if(inputWord.equals(stackWordHead)) return false;
+        else{
+            DEPNode node, nodeHead;
+            for(int i = inputIndex + 1; i < inputSize; i++){
+                node = nodes[i];
+                nodeHead = goldDepLabel[i].getNode();
+                if(node.equals(stackWordHead) || stackWord.equals(nodeHead))
+                    return true;
+            }
+            return false;
+        }
+    }
+
+    private boolean isRightArcCostly(DEPNode inputWord, DEPNode stackWord, DEPNode inputWordHead){
+        if(stackWord.equals(inputWordHead)) return false;
+        else{
+            DEPNode nodeHead;
+            for(DEPNode node: nodeStack){
+                if(node != stackWord && node.getID() != 0){
+                    nodeHead = goldDepLabel[node.getID() - 1].getNode();
+                    if(node.equals(inputWordHead) || nodeHead.equals(inputWord)) return true;
+                }
+                else if(node.getID() == 0 && node.equals(inputWordHead)) return true;
+            }
+            DEPNode node;
+            for(int i = inputIndex + 1; i < inputSize; i++){
+                node = nodes[i];
+                if(node.equals(inputWordHead)) return true;
+            }
+            return false;
+        }
+    }
+
+    private boolean isReduceCostly(DEPNode stackWord){
+        DEPNode nodeHead;
+        for(int i = inputIndex; i < inputSize; i++){
+            nodeHead = goldDepLabel[i].getNode();
+            if(stackWord.equals(nodeHead)) return true;
+        }
+        return false;
+    }
+
+    private boolean isShiftCostly(DEPNode inputWord, DEPNode inputWordHead){
+        DEPNode nodeHead;
+        for(DEPNode node: nodeStack){
+            if(node.getID() != 0) {
+                nodeHead = goldDepLabel[node.getID() - 1].getNode();
+                if (node.equals(inputWordHead) || nodeHead.equals(inputWord)) return true;
+            }
+            else{
+                if (node.equals(inputWordHead)) return true;
+            }
+        }
+        return false;
+    }
+
+    public void evaluate(Eval eval) {
+        evaluateTokens((DEPAccuracyEval) eval);
+    }
+
+    public void evaluateTokens(DEPAccuracyEval eval) {
         int las = 0;
         int uas = 0;
         DEPNode node;
@@ -183,21 +278,19 @@ public class DEPState<N extends DEPNode> extends NLPState<N, String> {
         return nodes[inputIndex];
     }
 
-    //test oracle
-    public static void main(String[] args) throws Exception{
-        TSVIndex<DEPNode> index = new DEPIndex(1, 2, 3, 4, 5, 6);
-        TSVReader<DEPNode> reader = new TSVReader<>(index);
-        Eval eval = new DEPAccuracyEval(true);
-        reader.open(IOUtils.createFileInputStream("src/main/resources/dat/wsj_0001.dep"));
-        DEPNode[] nodes = reader.next();
-        DEPState<DEPNode> state = new DEPState<>(nodes);
-        while(!state.isTerminate()){
-            state.getGoldMoveLabel();
-            state.next();
-        }
-        state.evaluate(eval);
-        System.out.println(eval.score());
-
+    public boolean isFirst(DEPNode node)
+    {
+        return nodes[0] == node;
     }
+
+    public boolean isLast(DEPNode node)
+    {
+        return nodes[nodes.length-1] == node;
+    }
+
+    public static void main(String[] args){
+        Stack<Integer> stack = new Stack<>();
+    }
+
 
 }
