@@ -42,6 +42,12 @@ public class FeatureItem<T> implements Serializable
 		this.value  = value;
 	}
 
+	public FeatureItem(Field field, T value)
+	{
+		this.field  = field;
+		this.value  = value;
+	}
+
 	public FeatureItem(int window, Field field)
 	{
 		this(null, null, window, field, null);

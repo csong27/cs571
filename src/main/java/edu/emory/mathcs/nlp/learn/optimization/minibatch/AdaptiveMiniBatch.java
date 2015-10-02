@@ -130,7 +130,7 @@ public abstract class AdaptiveMiniBatch extends OnlineOptimizer
 		float[] w = weight_vector.toArray();
 		float[] d = diagonals.toArray();
 		float[] g = gradients.toArray();
- 		
+
 		for (int i=0; i<w.length; i++)
 			w[i] += learning_rate / (epsilon + Math.sqrt(d[i])) * g[i];
 	}

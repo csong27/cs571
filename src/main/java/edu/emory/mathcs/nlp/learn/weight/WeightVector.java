@@ -18,7 +18,6 @@ package edu.emory.mathcs.nlp.learn.weight;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import edu.emory.mathcs.nlp.common.util.Sigmoid;
 import edu.emory.mathcs.nlp.learn.util.Prediction;
 import edu.emory.mathcs.nlp.learn.vector.IndexValuePair;
 import edu.emory.mathcs.nlp.learn.vector.Vector;
@@ -26,23 +25,18 @@ import edu.emory.mathcs.nlp.learn.vector.Vector;
 /**
  * @author Jinho D. Choi ({@code jinho.choi@emory.edu})
  */
+
 public abstract class WeightVector implements Serializable
 {
 	private static final long serialVersionUID = 5876902100282177639L;
-	protected Sigmoid sigmoid_table = null;
 	protected float[] weight_vector;
 	protected int     label_size;
 	protected int     feature_size;
+	protected boolean is_regression;
 
 	public WeightVector(int labelSize, int featureSize)
 	{
 		init(labelSize, featureSize);
-	}
-
-	public WeightVector(int labelSize, int featureSize, boolean regression)
-	{
-		init(labelSize, featureSize);
-		if (regression) setSigmoid(new Sigmoid());
 	}
 
 	/** @return a vector whose size is the same as this vector but the values are initialized to 0. */
@@ -59,7 +53,11 @@ public abstract class WeightVector implements Serializable
 
 	public boolean isRegression()
 	{
-		return sigmoid_table != null;
+		return is_regression;
+	}
+
+	public void setRegression(){
+		is_regression = true;
 	}
 
 	public int labelSize()
@@ -142,11 +140,6 @@ public abstract class WeightVector implements Serializable
 	public void add(WeightVector x)
 	{
 		add(x.toArray());
-	}
-
-	public void setSigmoid(Sigmoid table)
-	{
-		sigmoid_table = table;
 	}
 
 	@Override

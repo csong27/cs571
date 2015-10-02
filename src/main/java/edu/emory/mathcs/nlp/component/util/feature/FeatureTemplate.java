@@ -99,13 +99,13 @@ public abstract class FeatureTemplate<N,S> implements Serializable
 			f = getFeature(feature_list.get(i));
 			if (f != null) x.add(type, f);
 		}
-		
+
 		for (i=0; i<feature_set.size(); i++,type++)
 		{
 			t = getFeatures(feature_set.get(i));
 			if (t != null) for (String s : t) x.add(type, s);
 		}
-		
+
 		return x;
 	}
 	

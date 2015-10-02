@@ -120,11 +120,11 @@ public class StringModel implements Serializable
 		
 		if (bias > 0)	// bias
 			x.add(new IndexValuePair(0, bias));
-		
 		for (StringItem e : vector)
 		{
 			index = feature_map.indexOf(e.getType(), e.getValue());
 			if (index > 0) x.add(index, e.getWeight());
+
 		}
 		
 		x.sort();

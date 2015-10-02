@@ -45,6 +45,10 @@ public class DenseVector implements Vector
 	{
 		return vector.length;
 	}
+
+	public float[] getVector(){
+		return vector;
+	}
 	
 	@Override
 	public Iterator<IndexValuePair> iterator()

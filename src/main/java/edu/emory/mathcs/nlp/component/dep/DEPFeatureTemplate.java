@@ -2,193 +2,24 @@ package edu.emory.mathcs.nlp.component.dep;
 
 import edu.emory.mathcs.nlp.common.util.StringUtils;
 import edu.emory.mathcs.nlp.component.util.feature.*;
+import edu.emory.mathcs.nlp.test.VectorReader;
 
 import java.util.Arrays;
 
 /**
  * Created by Song on 9/23/2015.
  */
-public class DEPFeatureTemplate<N extends DEPNode> extends FeatureTemplate<N,DEPState<N>> {
+public abstract class DEPFeatureTemplate extends FeatureTemplate<DEPNode,DEPState<DEPNode>> {
+
+    private VectorReader vectorReader;
 
     public DEPFeatureTemplate()
     {
         init();
+        vectorReader = new VectorReader();
     }
 
-    protected void init() {
-        // lemma features
-        add(new FeatureItem<>(Source.i, -1, Field.lemma));
-        add(new FeatureItem<>(Source.i,  0, Field.lemma));
-        add(new FeatureItem<>(Source.i,  1, Field.lemma));
-
-        add(new FeatureItem<>(Source.j, -2, Field.lemma));
-        add(new FeatureItem<>(Source.j, -1, Field.lemma));
-        add(new FeatureItem<>(Source.j,  0, Field.lemma));
-        add(new FeatureItem<>(Source.j,  1, Field.lemma));
-        add(new FeatureItem<>(Source.j,  2, Field.lemma));
-
-        add(new FeatureItem<>(Source.k,  1, Field.lemma));
-
-        // pos features
-        add(new FeatureItem<>(Source.i, -2, Field.pos_tag));
-        add(new FeatureItem<>(Source.i, -1, Field.pos_tag));
-        add(new FeatureItem<>(Source.i,  0, Field.pos_tag));
-        add(new FeatureItem<>(Source.i,  1, Field.pos_tag));
-        add(new FeatureItem<>(Source.i,  2, Field.pos_tag));
-
-        add(new FeatureItem<>(Source.j, -2, Field.pos_tag));
-        add(new FeatureItem<>(Source.j, -1, Field.pos_tag));
-        add(new FeatureItem<>(Source.j,  0, Field.pos_tag));
-        add(new FeatureItem<>(Source.j,  1, Field.pos_tag));
-        add(new FeatureItem<>(Source.j,  2, Field.pos_tag));
-
-        add(new FeatureItem<>(Source.k,  1, Field.pos_tag));
-        add(new FeatureItem<>(Source.k,  2, Field.pos_tag));
-
-        // valency features
-        add(new FeatureItem<>(Source.i, 0, Field.valency, Direction.all));
-        add(new FeatureItem<>(Source.j, 0, Field.valency, Direction.all));
-
-        // 2nd-order features
-        add(new FeatureItem<>(Source.i, Relation.h  , 0, Field.lemma));
-        add(new FeatureItem<>(Source.i, Relation.lmd, 0, Field.lemma));
-        add(new FeatureItem<>(Source.i, Relation.rmd, 0, Field.lemma));
-        add(new FeatureItem<>(Source.j, Relation.lmd, 0, Field.lemma));
-
-        add(new FeatureItem<>(Source.i, Relation.h  , 0, Field.pos_tag));
-        add(new FeatureItem<>(Source.i, Relation.lmd, 0, Field.pos_tag));
-        add(new FeatureItem<>(Source.i, Relation.rmd, 0, Field.pos_tag));
-        add(new FeatureItem<>(Source.j, Relation.lmd, 0, Field.pos_tag));
-
-        add(new FeatureItem<>(Source.i,               0, Field.dependency_label));
-        add(new FeatureItem<>(Source.i, Relation.lns, 0, Field.dependency_label));
-        add(new FeatureItem<>(Source.i, Relation.lmd, 0, Field.dependency_label));
-        add(new FeatureItem<>(Source.i, Relation.rmd, 0, Field.dependency_label));
-        add(new FeatureItem<>(Source.j, Relation.lmd, 0, Field.dependency_label));
-
-        // 3rd-order features
-        add(new FeatureItem<>(Source.i, Relation.h2  , 0, Field.lemma));
-        add(new FeatureItem<>(Source.i, Relation.lmd2, 0, Field.lemma));
-        add(new FeatureItem<>(Source.i, Relation.rmd2, 0, Field.lemma));
-        add(new FeatureItem<>(Source.j, Relation.lmd2, 0, Field.lemma));
-
-        add(new FeatureItem<>(Source.i, Relation.h2  , 0, Field.pos_tag));
-        add(new FeatureItem<>(Source.i, Relation.lmd2, 0, Field.pos_tag));
-        add(new FeatureItem<>(Source.i, Relation.rmd2, 0, Field.pos_tag));
-        add(new FeatureItem<>(Source.j, Relation.lmd2, 0, Field.pos_tag));
-
-        add(new FeatureItem<>(Source.i, Relation.h   , 0, Field.dependency_label));
-        add(new FeatureItem<>(Source.i, Relation.lns2, 0, Field.dependency_label));
-        add(new FeatureItem<>(Source.i, Relation.lmd2, 0, Field.dependency_label));
-        add(new FeatureItem<>(Source.i, Relation.rmd2, 0, Field.dependency_label));
-        add(new FeatureItem<>(Source.j, Relation.lmd2, 0, Field.dependency_label));
-
-        // boolean features
-        addSet(new FeatureItem<>(Source.i, 0, Field.binary));
-        addSet(new FeatureItem<>(Source.j, 0, Field.binary));
-
-        /*
-            more features,
-            reference: Proceedings of the 49th Annual Meeting of the Association for Computational Linguistics:
-            shortpapers, pages 188–193,Portland, Oregon, June 19-24, 2011.c©2011
-            Transition-based Dependency Parsing with Rich Non-local Features
-         */
-        //distance features
-        add(new FeatureItem<>(Source.i, Field.distance));
-        //sub categorization
-        add(new FeatureItem<>(Source.i, Field.subcategorization, Direction.all));
-        add(new FeatureItem<>(Source.j, Field.subcategorization, Direction.all));
-        /*bigram features*/
-        add(new FeatureItem<>(Source.i,  0, Field.lemma), new FeatureItem<>(Source.i,  0, Field.pos_tag));
-        add(new FeatureItem<>(Source.j,  0, Field.lemma), new FeatureItem<>(Source.j,  0, Field.pos_tag));
-        add(new FeatureItem<>(Source.j,  1, Field.lemma), new FeatureItem<>(Source.j,  1, Field.pos_tag));
-        add(new FeatureItem<>(Source.j,  2, Field.lemma), new FeatureItem<>(Source.j,  2, Field.pos_tag));
-        add(new FeatureItem<>(Source.i,  0, Field.lemma), new FeatureItem<>(Source.j,  0, Field.lemma));
-        add(new FeatureItem<>(Source.i,  0, Field.pos_tag), new FeatureItem<>(Source.j,  0, Field.pos_tag));
-        add(new FeatureItem<>(Source.j,  0, Field.lemma), new FeatureItem<>(Source.i,  Field.distance));
-        add(new FeatureItem<>(Source.j,  0, Field.pos_tag), new FeatureItem<>(Source.i,  Field.distance));
-        //S0wvr;S0pvr;S0wvl;S0pvl;N0wvl;N0pvl;
-        add(new FeatureItem<>(Source.i,  0, Field.lemma), new FeatureItem<>(Source.i, 0, Field.valency, Direction.right));
-        add(new FeatureItem<>(Source.i,  0, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.valency, Direction.right));
-        add(new FeatureItem<>(Source.i,  0, Field.lemma), new FeatureItem<>(Source.i, 0, Field.valency, Direction.left));
-        add(new FeatureItem<>(Source.i,  0, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.valency, Direction.left));
-        add(new FeatureItem<>(Source.j,  0, Field.lemma), new FeatureItem<>(Source.j, 0, Field.valency, Direction.left));
-        add(new FeatureItem<>(Source.j,  0, Field.pos_tag), new FeatureItem<>(Source.j, 0, Field.valency, Direction.left));
-        //S0wd;S0pd;N0wd;N0pd;
-        add(new FeatureItem<>(Source.i,  0, Field.lemma), new FeatureItem<>(Source.i, Field.distance));
-        add(new FeatureItem<>(Source.i,  0, Field.pos_tag), new FeatureItem<>(Source.i, Field.distance));
-        add(new FeatureItem<>(Source.j,  0, Field.lemma), new FeatureItem<>(Source.i, Field.distance));
-        add(new FeatureItem<>(Source.j,  0, Field.pos_tag), new FeatureItem<>(Source.i, Field.distance));
-        //S0wsr;S0psr;S0wsl;S0psl;N0wsl;N0psl;
-        add(new FeatureItem<>(Source.i,  0, Field.lemma),
-                new FeatureItem<>(Source.i, Field.subcategorization, Direction.right));
-        add(new FeatureItem<>(Source.i,  0, Field.pos_tag),
-                new FeatureItem<>(Source.i, Field.subcategorization, Direction.right));
-        add(new FeatureItem<>(Source.i,  0, Field.lemma),
-                new FeatureItem<>(Source.i, Field.subcategorization, Direction.left));
-        add(new FeatureItem<>(Source.i,  0, Field.pos_tag),
-                new FeatureItem<>(Source.i, Field.subcategorization, Direction.left));
-        add(new FeatureItem<>(Source.j,  0, Field.lemma),
-                new FeatureItem<>(Source.j, Field.subcategorization, Direction.left));
-        add(new FeatureItem<>(Source.j,  0, Field.pos_tag),
-                new FeatureItem<>(Source.j, Field.subcategorization, Direction.left));
-        /*trigram features*/
-        //S0wN0wp;S0wpN0p;S0pN0wp
-        add(    new FeatureItem<>(Source.i,  0, Field.lemma),
-                new FeatureItem<>(Source.j,  0, Field.lemma),
-                new FeatureItem<>(Source.j,  0, Field.pos_tag));
-
-        add(    new FeatureItem<>(Source.i,  0, Field.lemma),
-                new FeatureItem<>(Source.i,  0, Field.pos_tag),
-                new FeatureItem<>(Source.j,  0, Field.pos_tag));
-
-        add(    new FeatureItem<>(Source.i,  0, Field.pos_tag),
-                new FeatureItem<>(Source.j,  0, Field.lemma),
-                new FeatureItem<>(Source.j,  0, Field.pos_tag));
-        //N0pN1pN2p;S0pN0pN1p;S0hpS0pN0p;S0pS0lpN0p;S0pS0rpN0p;S0pN0pN0lp
-        add(    new FeatureItem<>(Source.j,  0, Field.pos_tag),
-                new FeatureItem<>(Source.j,  1, Field.pos_tag),
-                new FeatureItem<>(Source.j,  2, Field.pos_tag));
-
-        add(    new FeatureItem<>(Source.i,  0, Field.pos_tag),
-                new FeatureItem<>(Source.j,  0, Field.pos_tag),
-                new FeatureItem<>(Source.j,  1, Field.pos_tag));
-
-        add(    new FeatureItem<>(Source.i, Relation.h, 0, Field.pos_tag),
-                new FeatureItem<>(Source.i,  0, Field.pos_tag),
-                new FeatureItem<>(Source.j,  0, Field.pos_tag));
-
-        add(    new FeatureItem<>(Source.i,  0, Field.pos_tag),
-                new FeatureItem<>(Source.i,  Relation.lmd, 0, Field.pos_tag),
-                new FeatureItem<>(Source.j,  0, Field.pos_tag));
-
-        add(    new FeatureItem<>(Source.i,  0, Field.pos_tag),
-                new FeatureItem<>(Source.i,  Relation.rmd, 0, Field.pos_tag),
-                new FeatureItem<>(Source.j,  0, Field.pos_tag));
-
-        add(    new FeatureItem<>(Source.i,  0, Field.pos_tag),
-                new FeatureItem<>(Source.j,  0, Field.pos_tag),
-                new FeatureItem<>(Source.j,  Relation.lmd, 0, Field.pos_tag));
-        //S0pS0lpS0l2p;S0pS0rpS0r2p;S0pS0hpS0h2p;N0pN0lpN0l2p;
-        add(    new FeatureItem<>(Source.i,  0, Field.pos_tag),
-                new FeatureItem<>(Source.i,  Relation.lmd, 0, Field.pos_tag),
-                new FeatureItem<>(Source.i,  Relation.lmd2, 0, Field.pos_tag));
-
-        add(    new FeatureItem<>(Source.i,  0, Field.pos_tag),
-                new FeatureItem<>(Source.i,  Relation.rmd, 0, Field.pos_tag),
-                new FeatureItem<>(Source.i,  Relation.rmd2, 0, Field.pos_tag));
-
-        add(    new FeatureItem<>(Source.i,  0, Field.pos_tag),
-                new FeatureItem<>(Source.i,  Relation.h, 0, Field.pos_tag),
-                new FeatureItem<>(Source.i,  Relation.h2, 0, Field.pos_tag));
-
-        add(    new FeatureItem<>(Source.j,  0, Field.pos_tag),
-                new FeatureItem<>(Source.j,  Relation.lmd, 0, Field.pos_tag),
-                new FeatureItem<>(Source.j,  Relation.lmd2, 0, Field.pos_tag));
-
-
-    }
-
+    protected abstract void init();
 
     @Override
     protected String getFeature(FeatureItem<?> item) {
@@ -199,15 +30,36 @@ public class DEPFeatureTemplate<N extends DEPNode> extends FeatureTemplate<N,DEP
             case word_form: return node.getWordForm();
             case simplified_word_form: return node.getSimplifiedWordForm();
             case lemma: return node.getLemma();
+            case length: return state.getLength((Boolean) item.value);
+            case num_of_operation: return state.getNumOfOperation((Boolean) item.value);
             case pos_tag: return node.getPOSTag();
             case feats: return node.getFeat((String) item.value);
             case dependency_label: return node.getLabel();
             case valency: return node.getValency((Direction) item.value);
-            case distance: return node.getPath(state.getInputWord(), Field.distance);
+            case move_label: return state.getMoveLabel();
+            case path:  return node.getPath(state.getInputWord(), Field.dependency_label);
+            case distance: return getDistance(item.source, item.relation, (Boolean) item.value);
+            case prefix: return getPrefix(node, (Integer) item.value);
+            case suffix: return getSuffix(node, (Integer) item.value);
             case subcategorization: return node.getSubcategorization((Direction) item.value, Field.dependency_label);
+            case subcategorization1: return node.getSubcategorization((Direction) item.value, Field.lemma);
+            case subcategorization2: return node.getSubcategorization((Direction) item.value, Field.pos_tag);
             default: throw new IllegalArgumentException("Unsupported feature: "+item.field);
         }
     }
+
+
+    protected String getPrefix(DEPNode node, int n) {
+        String s = node.getSimplifiedWordForm();
+        return (n < s.length()) ? StringUtils.toLowerCase(s.substring(0, n)) : null;
+    }
+
+    /** The suffix cannot be the entire word (e.g., getSuffix("abc", 3) -> null). */
+    protected String getSuffix(DEPNode node, int n) {
+        String s = node.getSimplifiedWordForm();
+        return (n < s.length()) ? StringUtils.toLowerCase(s.substring(s.length()-n)) : null;
+    }
+
     protected DEPNode getNode(FeatureItem<?> item) {
         DEPNode node = null;
 
@@ -245,6 +97,7 @@ public class DEPFeatureTemplate<N extends DEPNode> extends FeatureTemplate<N,DEP
 
         return null;
     }
+
     @Override
     protected String[] getFeatures(FeatureItem<?> item) {
         DEPNode node = getNode(item);
@@ -267,4 +120,75 @@ public class DEPFeatureTemplate<N extends DEPNode> extends FeatureTemplate<N,DEP
         return (index == 0) ? null : (index == values.length) ? values : Arrays.copyOf(values, index);
     }
 
+    protected String getDistance(Source source, Relation relation, boolean si){
+        if(si) {
+            DEPNode stack = state.getStackWord();
+            DEPNode input = state.getInputWord();
+            return getDistance(stack, input);
+        }
+        DEPNode node1, node2;
+        switch(source){
+            case i: node1 = state.getStackWord(); break;
+            case j: node1 = state.getInputWord(); break;
+            default: return null;
+        }
+        switch (relation){
+            case h   : node2 = node1.getHead();break;
+            case h2  : node2 = node1.getGrandHead();break;
+            case lmd : node2 = node1.getLeftMostDependent();break;
+            case lnd : node2 = node1.getLeftNearestDependent();break;
+            case lns : node2 = node1.getLeftNearestSibling();break;
+            case rmd : node2 = node1.getRightMostDependent();break;
+            case rnd : node2 = node1.getRightNearestDependent();break;
+            case rns : node2 = node1.getRightNearestSibling();break;
+            case i1: node2 = state.getInput(1);break;
+            case i2: node2 = state.getInput(2);break;
+            case i3: node2 = state.getInput(3);break;
+            case s1: node2 = state.getStack(1);break;
+            case s2: node2 = state.getStack(2);break;
+            case s3: node2 = state.getStack(3);break;
+            case k1: node2 = state.peekStack(1);break;
+            case k2: node2 = state.peekStack(2);break;
+            case k3: node2 = state.peekStack(3);break;
+            default: return null;
+        }
+        if(node2 != null)
+            return getDistance(node1, node2);
+        else
+            return null;
+    }
+
+    protected String getDistance(DEPNode node1, DEPNode node2){
+        float[] v1 = vectorReader.getVector(getKey(node1));
+        float[] v2 = vectorReader.getVector(getKey(node2));
+        if(v1 != null && v2 != null) {
+//            System.out.println(cosineSimilarity(v1, v2));
+            return String.format("%5.1f", cosineSimilarity(v1, v2));
+        }
+        else
+            return null;
+    }
+
+    private double cosineSimilarity(float[] vectorA, float[] vectorB) {
+        double dotProduct = 0.0;
+        double normA = 0.0;
+        double normB = 0.0;
+        for (int i = 0; i < vectorA.length; i++) {
+            dotProduct += vectorA[i] * vectorB[i];
+            normA += Math.pow(vectorA[i], 2);
+            normB += Math.pow(vectorB[i], 2);
+        }
+        return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+    }
+
+    private double euclideanDistance(float[] vectorA, float[] vectorB) {
+        double Sum = 0.0;
+        for(int i=0;i<vectorA.length;i++)
+            Sum = Sum + Math.pow((vectorA[i]-vectorB[i]),2.0);
+        return Math.sqrt(Sum);
+    }
+
+    protected String getKey(DEPNode node){
+        return node.getWordForm();// + "_" + node.getPOSTag();
+    }
 }

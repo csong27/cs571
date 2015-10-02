@@ -17,7 +17,10 @@ package edu.emory.mathcs.nlp.learn.optimization.sgd;
 
 import java.util.StringJoiner;
 
+import edu.emory.mathcs.nlp.common.util.MathUtils;
 import edu.emory.mathcs.nlp.learn.util.Instance;
+import edu.emory.mathcs.nlp.learn.vector.IndexValuePair;
+import edu.emory.mathcs.nlp.learn.vector.Vector;
 import edu.emory.mathcs.nlp.learn.weight.WeightVector;
 
 /**
@@ -25,9 +28,15 @@ import edu.emory.mathcs.nlp.learn.weight.WeightVector;
  */
 public class AdaGradRegression extends StochasticGradientDescent
 {
+
+	protected final double epsilon = 0.00001;
+	protected WeightVector diagonals;
+
 	public AdaGradRegression(WeightVector weightVector, boolean average, double learningRate)
 	{
 		super(weightVector, average, learningRate);
+		diagonals = weightVector.createEmptyVector();
+
 	}
 
 	@Override
@@ -40,10 +49,41 @@ public class AdaGradRegression extends StochasticGradientDescent
 	@Override
 	protected void updateMultinomial(Instance instance)
 	{
-		// TODO Auto-generated method stub
+		int      i, size = weight_vector.labelSize();
+		Vector   x = instance.getVector();
+		double[] d = weight_vector.scores(x);
+		double   g;
+
+		for (i=0; i<size; i++)
+		{
+			updateDiagonals(i, x);
+			g = instance.isLabel(i) ? 1 - d[i] : -d[i];
+			d[i] = g;
+		}
+
+		for (IndexValuePair xi : x)
+		{
+			for (i=0; i<size; i++)
+			{
+				g = d[i] * xi.getValue() * getGradient(i, xi.getIndex());
+				weight_vector.add(i, xi.getIndex(), g);
+				if (isAveraged()) average_vector.add(i, xi.getIndex(), g * steps);
+			}
+		}
 		
 	}
-	
+
+	private void updateDiagonals(int y, Vector x)
+	{
+		for (IndexValuePair p : x)
+			diagonals.add(y, p.getIndex(), MathUtils.sq(p.getValue()));
+	}
+
+	protected double getGradient(int y, int xi)
+	{
+		return learning_rate / (epsilon + Math.sqrt(diagonals.get(y, xi)));
+	}
+
 	@Override
 	public String toString()
 	{

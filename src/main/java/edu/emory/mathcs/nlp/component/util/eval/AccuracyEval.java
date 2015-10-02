@@ -55,4 +55,9 @@ public class AccuracyEval implements Eval
 	{
 		return 100d * correct / total;
 	}
+
+	@Override
+	public String scores(){
+		return null;
+	}
 }

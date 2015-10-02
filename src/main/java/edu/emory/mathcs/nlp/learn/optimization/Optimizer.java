@@ -52,7 +52,7 @@ public abstract class Optimizer
 	protected int multinomialBestHingeLoss(Instance instance)
 	{
 		double[] scores = weight_vector.scores(instance.getVector());
-		scores[instance.getLabel()] -= 1;
+		scores[instance.getLabel()] -= 1.5;
 		return DSUtils.maxIndex(scores);
 	}
 }

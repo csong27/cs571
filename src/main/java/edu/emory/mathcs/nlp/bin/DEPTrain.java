@@ -2,6 +2,9 @@ package edu.emory.mathcs.nlp.bin;
 
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.component.dep.*;
+import edu.emory.mathcs.nlp.component.dep.feature.DEPFeatureTemplate1;
+import edu.emory.mathcs.nlp.component.dep.feature.DEPFeatureTemplate2;
+import edu.emory.mathcs.nlp.component.dep.feature.DEPFeatureTemplate3;
 import edu.emory.mathcs.nlp.component.util.NLPComponent;
 import edu.emory.mathcs.nlp.component.util.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.util.eval.Eval;
@@ -10,6 +13,7 @@ import edu.emory.mathcs.nlp.component.util.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.util.train.NLPTrain;
 import edu.emory.mathcs.nlp.learn.model.StringModel;
 import edu.emory.mathcs.nlp.learn.weight.MultinomialWeightVector;
+import edu.emory.mathcs.nlp.test.VecFeatureTemplate;
 
 import java.util.List;
 
@@ -37,7 +41,8 @@ public class DEPTrain extends NLPTrain<DEPNode,String,DEPState<DEPNode>> {
     }
 
     protected FeatureTemplate<DEPNode,DEPState<DEPNode>> createFeatureTemplate(){
-        return new DEPFeatureTemplate<>();
+        return new DEPFeatureTemplate2();
+//        return new VecFeatureTemplate();
     }
 
     protected NLPComponent<DEPNode,String,DEPState<DEPNode>> createComponent(){

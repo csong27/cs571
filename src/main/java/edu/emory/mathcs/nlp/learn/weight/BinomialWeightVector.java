@@ -17,6 +17,7 @@ package edu.emory.mathcs.nlp.learn.weight;
 
 import java.util.Arrays;
 
+import edu.emory.mathcs.nlp.common.util.MathUtils;
 import edu.emory.mathcs.nlp.learn.util.Prediction;
 import edu.emory.mathcs.nlp.learn.vector.IndexValuePair;
 import edu.emory.mathcs.nlp.learn.vector.Vector;
@@ -27,17 +28,17 @@ import edu.emory.mathcs.nlp.learn.vector.Vector;
 public class BinomialWeightVector extends WeightVector
 {
 	private static final long serialVersionUID = 7868307353161553611L;
-	
+
 	public BinomialWeightVector()
 	{
 		super(2, 0);
 	}
-	
+
 	public BinomialWeightVector(int featureSize)
 	{
 		super(2, featureSize);
 	}
-	
+
 	@Override
 	public void init(int labelSize, int featureSize)
 	{
@@ -45,46 +46,46 @@ public class BinomialWeightVector extends WeightVector
 		label_size    = 2;
 		feature_size  = featureSize;
 	}
-	
+
 	@Override
 	public boolean expand(int labelSize, int featureSize)
 	{
 		if (feature_size < featureSize)
 		{
 			weight_vector = Arrays.copyOf(weight_vector, featureSize);
-			feature_size  = featureSize; 
+			feature_size  = featureSize;
 			return true;
 		}
-			
+
 		return false;
 	}
-	
+
 	@Override
 	public int indexOf(int y, int xi)
 	{
 		return xi;
 	}
-	
+
 	public double score(Vector x)
 	{
 		double score = 0;
-		
+
 		for (IndexValuePair p : x)
 		{
 			if (p.getIndex() < feature_size)
 				score += weight_vector[p.getIndex()] * p.getValue();
 		}
-		
-		return isRegression() ? sigmoid_table.get(score) : score;
+
+		return isRegression() ? MathUtils.sigmoid(score) : score;
 	}
-	
+
 	@Override
 	public double[] scores(Vector x)
 	{
 		double score = score(x);
 		return new double[]{score, score};
 	}
-	
+
 	@Override
 	public Prediction predictBest(Vector x)
 	{
@@ -92,19 +93,19 @@ public class BinomialWeightVector extends WeightVector
 		double bound = 0;
 		double upper = 0;
 		int    label = 1;
-		
+
 		if (isRegression())
 		{
 			bound = 0.5;
 			upper = 1;
 		}
-		
+
 		if (score < bound)
 		{
 			label = 0;
 			score = upper - score;
 		}
-		
+
 		return new Prediction(label, score);
 	}
 }

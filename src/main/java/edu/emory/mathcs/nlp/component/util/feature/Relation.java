@@ -50,5 +50,14 @@ public enum Relation implements Serializable
 	/** The 2nd left-nearest sibling. */
 	lns2,
 	/** The 2nd right-nearest sibling. */
-	rns2;
+	rns2,
+	i1,
+	i2,
+	i3,
+	s1,
+	s2,
+	s3,
+	k1,
+	k2,
+	k3
 }

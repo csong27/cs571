@@ -15,6 +15,7 @@
  */
 package edu.emory.mathcs.nlp.component.util.config;
 
+import edu.emory.mathcs.nlp.learn.optimization.sgd.AdaGradRegression;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
@@ -123,11 +124,12 @@ public abstract class NLPConfig<N> implements ConfigXML
 		
 		switch (algorithm)
 		{
-		case PERCEPTRON         : return getPerceptron       (eOptimizer, model);
-		case ADAGRAD            : return getAdaGrad          (eOptimizer, model);
-		case ADAGRAD_MINI_BATCH : return getAdaGradMiniBatch (eOptimizer, model);
-		case ADADELTA_MINI_BATCH: return getAdaDeltaMiniBatch(eOptimizer, model);
-		case LIBLINEAR_L2_SVC   : return getLiblinearL2SVC   (eOptimizer, model);
+			case PERCEPTRON         : return getPerceptron       (eOptimizer, model);
+			case ADAGRAD            : return getAdaGrad          (eOptimizer, model);
+			case ADAGRAD_MINI_BATCH : return getAdaGradMiniBatch (eOptimizer, model);
+			case ADADELTA_MINI_BATCH: return getAdaDeltaMiniBatch(eOptimizer, model);
+			case LIBLINEAR_L2_SVC   : return getLiblinearL2SVC   (eOptimizer, model);
+			case ADAGRADREGRESSION	: return getAdaGradRegression(eOptimizer, model);
 		}
 		
 		throw new IllegalArgumentException(algorithm+" is not a valid algorithm name.");
@@ -147,7 +149,7 @@ public abstract class NLPConfig<N> implements ConfigXML
 	private Perceptron getPerceptron(Element eOptimizer, StringModel model)
 	{
 		boolean average      = XMLUtils.getBooleanTextContentFromFirstElementByTagName(eOptimizer, AVERAGE);
-		double  learningRate = XMLUtils.getDoubleTextContentFromFirstElementByTagName (eOptimizer, LEARNING_RATE);
+		double  learningRate = XMLUtils.getDoubleTextContentFromFirstElementByTagName(eOptimizer, LEARNING_RATE);
 		
 		return new Perceptron(model.getWeightVector(), average, learningRate);
 	}
@@ -156,8 +158,16 @@ public abstract class NLPConfig<N> implements ConfigXML
 	{
 		boolean average      = XMLUtils.getBooleanTextContentFromFirstElementByTagName(eOptimizer, AVERAGE);
 		double  learningRate = XMLUtils.getDoubleTextContentFromFirstElementByTagName (eOptimizer, LEARNING_RATE);
-		
+
 		return new AdaGrad(model.getWeightVector(), average, learningRate);
+	}
+
+	private AdaGradRegression getAdaGradRegression(Element eOptimizer, StringModel model)
+	{
+		boolean average      = XMLUtils.getBooleanTextContentFromFirstElementByTagName(eOptimizer, AVERAGE);
+		double  learningRate = XMLUtils.getDoubleTextContentFromFirstElementByTagName (eOptimizer, LEARNING_RATE);
+		model.getWeightVector().setRegression();
+		return new AdaGradRegression(model.getWeightVector(), average, learningRate);
 	}
 	
 	private AdaGradMiniBatch getAdaGradMiniBatch(Element eOptimizer, StringModel model)

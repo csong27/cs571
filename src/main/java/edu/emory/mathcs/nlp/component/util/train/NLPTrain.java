@@ -140,7 +140,7 @@ public abstract class NLPTrain<N,L,S extends NLPState<N,L>>
 			BinUtils.LOG.info(models[i].trainInfo()+"\n");
 
 			if (optimizers[i].getType() == OptimizerType.ONLINE)
-				score = trainOnline(reader, developFiles, component, optimizers[i], models[i]);
+				score = myTrainOnline(reader, developFiles, component, optimizers[i], models[i]);
 			else
 				score = trainOneVsAll(reader, developFiles, component, optimizers[i], models[i]);
 		}
@@ -183,13 +183,13 @@ public abstract class NLPTrain<N,L,S extends NLPState<N,L>>
 	protected double myTrainOnline(TSVReader<N> reader, List<String> developFiles, NLPComponent<N,?,?> component, Optimizer optimizer, StringModel model)
 	{
 		Eval eval = component.getEval();
-		double currScore, bestScore = 0;
+		double currScore, bestScore = 0, prevScore = 0;
 		float[] bestWeight = null;
 
 		int maxEpoch = 50;
 		int patience = 10;
-		double patienceIncrease = 2.0;
-		double improveThreshold = 1.0015;
+		double patienceIncrease = 1.3;
+		double improveThreshold = 1.0025;
 
 		for (int epoch=1; epoch < maxEpoch && epoch < patience;epoch++)
 		{
@@ -204,8 +204,11 @@ public abstract class NLPTrain<N,L,S extends NLPState<N,L>>
 				bestScore = currScore;
 				bestWeight = model.getWeightVector().toArray().clone();
 			}
-
-			BinUtils.LOG.info(String.format("at epoch %3d, patience %3d: %5.2f\n", epoch, patience, currScore));
+			if(currScore < prevScore){
+				patience--;
+			}
+			prevScore = currScore;
+			BinUtils.LOG.info(String.format("at epoch %3d, patience %3d: %s\n", epoch, patience, eval.scores()));
 		}
 
 		model.getWeightVector().fromArray(bestWeight);

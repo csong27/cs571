@@ -39,4 +39,9 @@ public class DEPAccuracyEval implements Eval {
             return 100d * uas / total;
     }
 
+    public String scores(){
+        double _uas = 100d * uas / total;
+        double _las = 100d * las / total;
+        return String.format("UAS is : %5.2f, LAS is :%5.2f", _uas, _las);
+    }
 }

@@ -868,12 +868,14 @@ public class DEPNode extends POSNode implements Comparable<DEPNode>
 	}
 	
 	/** Clear out all dependencies (head, label, and sibling relations) of the node. */
-	public void clearDependencies()
+	public DEPArc clearDependencies()
 	{
+		DEPArc arc = new DEPArc(head_node, dependency_label);
 		head_node  = null;
 		dependency_label = null;
 		sibling_id = 0;
 		dependent_list.clear();
+		return arc;
 	}
 	
 //	====================================== Booleans ======================================

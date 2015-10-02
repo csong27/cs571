@@ -72,4 +72,5 @@ public interface ConfigXML
 	String ADAGRAD_MINI_BATCH	= "adagrad-mini-batch";
 	String ADADELTA_MINI_BATCH	= "adadelta-mini-batch";
 	String LIBLINEAR_L2_SVC		= "liblinear-l2-svc";
+	String ADAGRADREGRESSION 	= "adagrad-regression";
 }

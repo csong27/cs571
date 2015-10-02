@@ -1,25 +1,31 @@
 package edu.emory.mathcs.nlp.component.dep;
-import edu.emory.mathcs.nlp.common.util.IOUtils;
+
 import edu.emory.mathcs.nlp.component.util.eval.Eval;
-import edu.emory.mathcs.nlp.component.util.feature.Source;
-import edu.emory.mathcs.nlp.component.util.reader.TSVIndex;
-import edu.emory.mathcs.nlp.component.util.reader.TSVReader;
 import edu.emory.mathcs.nlp.component.util.state.NLPState;
 
 import java.util.*;
 
 /**
  * Created by Song on 9/23/2015.
+ * TODO: change next() function, dynamic oracle, non-projective, word2vec
+ *
  */
 public class DEPState<N extends DEPNode> extends NLPState<N, String> {
     static final String REDUCE = "REDUCE";
     static final String SHIFT = "SHIFT";
     static final String LEFTARC = "LEFTARC";
     static final String RIGHTARC = "RIGHTARC";
+    static final String LEFTPASS = "LEFTPASS";
+    static final String RIGHTPASS = "RIGHTPASS";
+    static final String PASS = "PASS";
+
     static final String DELIM = ":";
+    private int numOfReduce = 0;
+    private int numOfShift = 0;
 
     private DEPArc[] goldDepLabel;
     private Stack<N> nodeStack;
+    private Stack<N> passStack;
     private int inputIndex;
     private int inputSize;
     //move and dependency label, combined as the training label
@@ -31,13 +37,13 @@ public class DEPState<N extends DEPNode> extends NLPState<N, String> {
         inputIndex = 0;
         inputSize = nodes.length;
         nodeStack = new Stack<>();
+        passStack = new Stack<>();
         //add root to stack to initialize
         nodeStack.push((N)DEPNode.ROOT);
-        initGoldDepLabel();
     }
 
-
     public N getStack(int window) {
+        if(nodeStack.size() == 0)   return null;
         return getNode(getStackWord().getID() - 1, window);
     }
 
@@ -45,31 +51,16 @@ public class DEPState<N extends DEPNode> extends NLPState<N, String> {
         return getNode(inputIndex, window);
     }
 
-    public N peekStack(int window)
-    {
+    public N peekStack(int window) {
         if(window < nodeStack.size()){
             return nodeStack.elementAt(nodeStack.size() - window - 1);
         }
         return null;
     }
 
-    private void initGoldDepLabel(){
-        goldDepLabel = new DEPArc[inputSize];
-        DEPNode node, head;
-        for(int i = 0; i < inputSize; i++){
-            node = nodes[i];
-            head = node.getHead();
-            if(head != null)
-                goldDepLabel[i] = new DEPArc(head, node.getLabel());
-            else
-                goldDepLabel[i] = new DEPArc(DEPNode.ROOT, "root");
-            //should clear dependencies before training
-            node.clearDependencies();
-        }
-
+    public void clearGoldLabels(){
+        goldDepLabel = Arrays.stream(nodes).map(n -> n.clearDependencies()).toArray(DEPArc[]::new);
     }
-
-    public void clearGoldLabels(){}
 
     /** Moves onto the next state */
     public void next(){
@@ -96,6 +87,50 @@ public class DEPState<N extends DEPNode> extends NLPState<N, String> {
         }
     }
 
+    public void next2(){
+        if(move != null){
+            DEPNode stackWord = getStackWord();
+            DEPNode inputWord = getInputWord();
+            if(move.equals(LEFTARC)){
+                if(stackWord != DEPNode.ROOT && !inputWord.isDescendantOf(stackWord)) {
+                    stackWord.setHead(inputWord, depLabel);
+                    reduce();
+                }
+                else shift();
+            }
+            else if(move.equals(LEFTPASS)){
+                if(stackWord != DEPNode.ROOT && !inputWord.isDescendantOf(stackWord)) {
+                    stackWord.setHead(inputWord, depLabel);
+                    pass();
+                }
+                else
+                    shift();
+            }
+            else if(move.equals(RIGHTARC)){
+                if(!stackWord.isDescendantOf(inputWord))
+                  inputWord.setHead(stackWord, depLabel);
+                shift();
+            }
+            else if (move.equals(RIGHTPASS)){
+                if(!stackWord.isDescendantOf(inputWord))
+                    inputWord.setHead(stackWord, depLabel);
+                if(nodeStack.size() == 1) shift();
+                else pass();
+            }
+            else if(move.equals(REDUCE)){
+                if(nodeStack.size() == 1) shift();
+                else reduce();
+            }
+            else if(move.equals(SHIFT)) shift();
+            else{
+                if(nodeStack.size() == 1) shift();
+                else pass();
+            }
+        }
+    }
+
+
+
     /** @return true if no more state can be processed; otherwise, false. */
     public boolean isTerminate(){
         return inputIndex >= inputSize;
@@ -106,7 +141,6 @@ public class DEPState<N extends DEPNode> extends NLPState<N, String> {
         return getGoldMoveLabel();
     }
 
-    // Not sure if this is useful
     public String setLabel(String label){
         String[] moveLabel = label.split(DELIM);
         this.move = moveLabel[0];
@@ -124,22 +158,46 @@ public class DEPState<N extends DEPNode> extends NLPState<N, String> {
         //the ground truth
         DEPArc  stackWordHeadLabel = getHeadNodeByIndex(stackWord.getID() - 1),
                 inputWordHeadLabel = getHeadNodeByIndex(inputWord.getID() - 1);
-        /*
-            if (j,l,i) ∈ Agold then LeftArc i.e. stack is dependent of input, input(j) is head
-            else if (i,l,j) ∈ Agold then RightArc i.e. stack(i) is head of input, input is dependent
-            else if ∃k [k < i ∧ ∃ l[(k,l,j) ∈ Agold ∨(j,l,k) ∈ Agold]] then Reduce
-            else Shift
-        */
         //left arc
-        if(stackWordHeadLabel != null && inputWord.equals(stackWordHeadLabel.getNode()))
-            return getMoveLabel(LEFTARC, stackWordHeadLabel.getLabel());
+        if(stackWordHeadLabel != null && inputWord.equals(stackWordHeadLabel.getNode())) {
+            if(reduceCondition(stackWord, inputWord, inputWordHeadLabel.getNode()))
+                return getMoveLabel(LEFTARC, stackWordHeadLabel.getLabel());
+            else
+                return getMoveLabel(LEFTPASS, stackWordHeadLabel.getLabel());
+        }
         //right arc
-        else if(stackWord.equals(inputWordHeadLabel.getNode()))
-            return getMoveLabel(RIGHTARC, inputWordHeadLabel.getLabel());
+        else if(stackWord.equals(inputWordHeadLabel.getNode())) {
+            if (shiftCondition(stackWord, inputWord, inputWordHeadLabel.getNode()))
+                return getMoveLabel(RIGHTARC, inputWordHeadLabel.getLabel());
+            else
+                return getMoveLabel(RIGHTPASS, inputWordHeadLabel.getLabel());
+        }
         //reduce
         else if(reduceCondition(stackWord, inputWord, inputWordHeadLabel.getNode()))
             return getMoveLabel(REDUCE, null);
         //shift
+        else if (shiftCondition(stackWord, inputWord, inputWordHeadLabel.getNode()))
+            return getMoveLabel(SHIFT, null);
+        else
+            return getMoveLabel(PASS, null);
+    }
+
+    public String getGoldMoveLabel2(){
+        DEPNode stackWord = getStackWord(),
+                inputWord = getInputWord();
+        //the ground truth
+        DEPArc  stackWordHeadLabel = getHeadNodeByIndex(stackWord.getID() - 1),
+                inputWordHeadLabel = getHeadNodeByIndex(inputWord.getID() - 1);
+        //left arc
+        if(stackWordHeadLabel != null && inputWord.equals(stackWordHeadLabel.getNode()))
+            return getMoveLabel(LEFTARC, stackWordHeadLabel.getLabel());
+            //right arc
+        else if(stackWord.equals(inputWordHeadLabel.getNode()))
+            return getMoveLabel(RIGHTARC, inputWordHeadLabel.getLabel());
+            //reduce
+        else if(reduceCondition(stackWord, inputWord, inputWordHeadLabel.getNode()))
+            return getMoveLabel(REDUCE, null);
+            //shift
         else
             return getMoveLabel(SHIFT, null);
     }
@@ -148,10 +206,14 @@ public class DEPState<N extends DEPNode> extends NLPState<N, String> {
         return move + DELIM + depLabel;
     }
 
+    public String getMoveLabel(){
+        return move + DELIM + depLabel;
+    }
+
     private boolean reduceCondition(DEPNode stackWord, DEPNode inputWord, DEPNode inputHead){
-        //if ∃k [k < i ∧ ∃ l[(k,l,j) ∈ Agold ∨(j,l,k) ∈ Agold]] then Reduce
         DEPNode node;
         DEPNode nodeHead;
+        //if ∃k [k < i ∧ ∃ l[(k,l,j) ∈ A gold ∨(j,l,k) ∈ A gold]] then Reduce
         for(int i = 0; i < stackWord.getID() - 1; i++){
             node = nodes[i];
             nodeHead = getHeadNodeByIndex(i).getNode();
@@ -161,80 +223,30 @@ public class DEPState<N extends DEPNode> extends NLPState<N, String> {
         return false;
     }
 
-    public Set<String> getDynamicGoldMoveLabel(){
-        DEPNode stackWord = getStackWord(),
-                inputWord = getInputWord();
-        //the ground truth
-        DEPArc  stackWordHeadLabel = getHeadNodeByIndex(stackWord.getID() - 1),
-                inputWordHeadLabel = getHeadNodeByIndex(inputWord.getID() - 1);
-        Set<String> zeroCostLabels = new HashSet<>();
-        if(stackWordHeadLabel != null && !isLeftArcCostly(inputWord, stackWord, stackWordHeadLabel.getNode()))
-            zeroCostLabels.add(getMoveLabel(LEFTARC, stackWordHeadLabel.getLabel()));
-        if(!isRightArcCostly(inputWord, stackWord, inputWordHeadLabel.getNode()))
-            zeroCostLabels.add(getMoveLabel(RIGHTARC, inputWordHeadLabel.getLabel()));
-        if(!isReduceCostly(stackWord))
-            zeroCostLabels.add(getMoveLabel(REDUCE, null));
-        if(!isShiftCostly(inputWord, inputWordHeadLabel.getNode()))
-            zeroCostLabels.add(getMoveLabel(SHIFT, null));
-
-        return zeroCostLabels;
-    }
-
-    private boolean isLeftArcCostly(DEPNode inputWord, DEPNode stackWord, DEPNode stackWordHead){
-        if(inputWord.equals(stackWordHead)) return false;
-        else{
-            DEPNode node, nodeHead;
-            for(int i = inputIndex + 1; i < inputSize; i++){
-                node = nodes[i];
-                nodeHead = goldDepLabel[i].getNode();
-                if(node.equals(stackWordHead) || stackWord.equals(nodeHead))
-                    return true;
-            }
-            return false;
-        }
-    }
-
-    private boolean isRightArcCostly(DEPNode inputWord, DEPNode stackWord, DEPNode inputWordHead){
-        if(stackWord.equals(inputWordHead)) return false;
-        else{
-            DEPNode nodeHead;
-            for(DEPNode node: nodeStack){
-                if(node != stackWord && node.getID() != 0){
-                    nodeHead = goldDepLabel[node.getID() - 1].getNode();
-                    if(node.equals(inputWordHead) || nodeHead.equals(inputWord)) return true;
-                }
-                else if(node.getID() == 0 && node.equals(inputWordHead)) return true;
-            }
-            DEPNode node;
-            for(int i = inputIndex + 1; i < inputSize; i++){
-                node = nodes[i];
-                if(node.equals(inputWordHead)) return true;
-            }
-            return false;
-        }
-    }
-
-    private boolean isReduceCostly(DEPNode stackWord){
-        DEPNode nodeHead;
-        for(int i = inputIndex; i < inputSize; i++){
-            nodeHead = goldDepLabel[i].getNode();
-            if(stackWord.equals(nodeHead)) return true;
-        }
-        return false;
-    }
-
-    private boolean isShiftCostly(DEPNode inputWord, DEPNode inputWordHead){
+    private boolean shiftCondition(DEPNode stackWord, DEPNode inputWord, DEPNode inputHead){
+        //¬[∃k∈σ.(k!=i)∧((k←j)∨(k→j))]
+//        if(inputHead.compareTo(stackWord) < 0)
+//            return false;
         DEPNode nodeHead;
         for(DEPNode node: nodeStack){
-            if(node.getID() != 0) {
-                nodeHead = goldDepLabel[node.getID() - 1].getNode();
-                if (node.equals(inputWordHead) || nodeHead.equals(inputWord)) return true;
-            }
-            else{
-                if (node.equals(inputWordHead)) return true;
+            if(!node.equals(stackWord)){
+                if(inputHead.equals(node))
+                    return false;
+                nodeHead = node.getID() > 0 ? getHeadNodeByIndex(node.getID() - 1).getNode(): null;
+                if(nodeHead != null && nodeHead.equals(inputWord))
+                    return false;
             }
         }
-        return false;
+        return true;
+    }
+
+    private boolean reduceCondition2(DEPNode stackWord, DEPNode inputWord, DEPNode inputHead){
+        if(!stackWord.hasHead())
+            return false;
+        for (int i=inputIndex+1; i<nodes.length; i++)
+            if (goldDepLabel[i].isNode(stackWord))
+                return false;
+        return true;
     }
 
     public void evaluate(Eval eval) {
@@ -258,12 +270,24 @@ public class DEPState<N extends DEPNode> extends NLPState<N, String> {
     }
 
     private void shift(){
+        //( [σ|i],δ, [j|β],A)⇒( [σ|i|δ|j], [ ],β,A)
+        if(!passStack.isEmpty())
+            for(N node: passStack)
+                nodeStack.push(node);
+        passStack.clear();
         nodeStack.push(nodes[inputIndex]);
         inputIndex++;
+        numOfShift++;
     }
 
     private void reduce(){
         nodeStack.pop();
+        numOfReduce++;
+    }
+
+    private void pass(){
+        //( [σ|i],δ, [j|β],A)⇒(σ, [i|δ], [j|β],A)
+        passStack.push(nodeStack.pop());
     }
 
     public String getMove(){
@@ -271,7 +295,7 @@ public class DEPState<N extends DEPNode> extends NLPState<N, String> {
     }
 
     public N getStackWord(){
-        return nodeStack.peek();
+        return nodeStack.size() > 0 ? nodeStack.peek() : null;
     }
 
     public N getInputWord(){
@@ -288,9 +312,32 @@ public class DEPState<N extends DEPNode> extends NLPState<N, String> {
         return nodes[nodes.length-1] == node;
     }
 
-    public static void main(String[] args){
-        Stack<Integer> stack = new Stack<>();
+    public String getStackLength(){
+        return nodeStack.size() + "";
     }
 
+    public String getInputLength(){
+        return inputSize - inputIndex + "";
+    }
+
+    public String getDistance(){
+        return "" + (getStackWord().getID() - getInputWord().getID());
+    }
+
+    public String getLength(Boolean stack){
+        return stack ? getStackLength(): getInputLength();
+    }
+
+    public String getNumOfReduce(){
+        return numOfReduce + "";
+    }
+
+    public String getNumOfShift(){
+        return numOfShift + "";
+    }
+
+    public String getNumOfOperation(Boolean reduce){
+        return reduce? getNumOfReduce(): getNumOfShift();
+    }
 
 }
