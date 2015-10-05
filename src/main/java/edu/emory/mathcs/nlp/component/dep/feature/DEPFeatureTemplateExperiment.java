@@ -4,9 +4,9 @@ import edu.emory.mathcs.nlp.component.dep.DEPFeatureTemplate;
 import edu.emory.mathcs.nlp.component.util.feature.*;
 
 /**
- * Created by Song on 9/30/2015.
+ * Created by Song on 10/5/2015.
  */
-public class DEPFeatureTemplate2 extends DEPFeatureTemplate {
+public class DEPFeatureTemplateExperiment extends DEPFeatureTemplate {
 
     protected void init() {
         // lemma features
@@ -200,23 +200,23 @@ public class DEPFeatureTemplate2 extends DEPFeatureTemplate {
         add(new FeatureItem<>(Source.i, 0, Field.pos_tag), new FeatureItem<>(Source.k, 1, Field.pos_tag));
         add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.j,  0, Field.lemma));
         //s2.t◦s1.t◦b1.t; s2.t◦s1.t◦lc1(s1).t; s2.t◦s1.t◦rc1(s1).t; s2.t◦s1.t◦lc1(s2).t; s2.t◦s1.t◦rc1(s2).t;
-//        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.pos_tag),
-//                new FeatureItem<>(Source.j,  0, Field.pos_tag));
-//        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.pos_tag),
-//                new FeatureItem<>(Source.i,  Relation.rmd, 0, Field.pos_tag));
-//        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.pos_tag),
-//                new FeatureItem<>(Source.i,  Relation.lmd, 0, Field.pos_tag));
-//        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.pos_tag),
-//                new FeatureItem<>(Source.k,  Relation.rmd, 1, Field.pos_tag));
-//        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.pos_tag),
-//                new FeatureItem<>(Source.k,  Relation.lmd, 1, Field.pos_tag));
-//        //s2.t◦s1.w◦rc1(s2).t; s2.t◦s1.w◦lc1(s1).t; s2.t◦s1.w◦b1.t
-//        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.lemma),
-//                new FeatureItem<>(Source.k,  Relation.rmd, 1, Field.pos_tag));
-//        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.lemma),
-//                new FeatureItem<>(Source.i,  Relation.lmd, 0, Field.pos_tag));
-//        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.lemma),
-//                new FeatureItem<>(Source.j, 0, Field.pos_tag));
+        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.pos_tag),
+                new FeatureItem<>(Source.j,  0, Field.pos_tag));
+        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.pos_tag),
+                new FeatureItem<>(Source.i,  Relation.rmd, 0, Field.pos_tag));
+        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.pos_tag),
+                new FeatureItem<>(Source.i,  Relation.lmd, 0, Field.pos_tag));
+        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.pos_tag),
+                new FeatureItem<>(Source.k,  Relation.rmd, 1, Field.pos_tag));
+        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.pos_tag),
+                new FeatureItem<>(Source.k,  Relation.lmd, 1, Field.pos_tag));
+        //s2.t◦s1.w◦rc1(s2).t; s2.t◦s1.w◦lc1(s1).t; s2.t◦s1.w◦b1.t
+        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.lemma),
+                new FeatureItem<>(Source.k,  Relation.rmd, 1, Field.pos_tag));
+        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.lemma),
+                new FeatureItem<>(Source.i,  Relation.lmd, 0, Field.pos_tag));
+        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.lemma),
+                new FeatureItem<>(Source.j, 0, Field.pos_tag));
 
 
         //try norm
@@ -227,14 +227,15 @@ public class DEPFeatureTemplate2 extends DEPFeatureTemplate {
         add(new FeatureItem<>(Source.j, 1, Field.norm));
         add(new FeatureItem<>(Source.k, 1, Field.norm));
 
-//        add(new FeatureItem<>(Source.i, 2, Field.norm));
-//        add(new FeatureItem<>(Source.j, 2, Field.norm));
-//        add(new FeatureItem<>(Source.k, 2, Field.norm));
-//
-//        add(new FeatureItem<>(Source.i, Relation.h, 0, Field.norm));
-//        add(new FeatureItem<>(Source.i, Relation.lmd, 0, Field.norm));
-//        add(new FeatureItem<>(Source.i, Relation.rmd, 0, Field.norm));
-//        add(new FeatureItem<>(Source.j, Relation.lmd, 0, Field.norm));
+        add(new FeatureItem<>(Source.i, 2, Field.norm));
+        add(new FeatureItem<>(Source.j, 2, Field.norm));
+        add(new FeatureItem<>(Source.k, 2, Field.norm));
+
+        add(new FeatureItem<>(Source.i, Relation.h, 0, Field.norm));
+        add(new FeatureItem<>(Source.i, Relation.lmd, 0, Field.norm));
+        add(new FeatureItem<>(Source.i, Relation.rmd, 0, Field.norm));
+        add(new FeatureItem<>(Source.j, Relation.lmd, 0, Field.norm));
     }
+
 
 }

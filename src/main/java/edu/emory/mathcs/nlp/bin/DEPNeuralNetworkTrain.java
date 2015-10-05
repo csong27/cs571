@@ -2,9 +2,7 @@ package edu.emory.mathcs.nlp.bin;
 
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.component.dep.*;
-import edu.emory.mathcs.nlp.component.dep.feature.DEPFeatureTemplate1;
-import edu.emory.mathcs.nlp.component.dep.feature.DEPFeatureTemplate2;
-import edu.emory.mathcs.nlp.component.dep.feature.DEPFeatureTemplate3;
+import edu.emory.mathcs.nlp.component.dep.feature.DEPFeatureTemplateZhang;
 import edu.emory.mathcs.nlp.component.util.NLPComponent;
 import edu.emory.mathcs.nlp.component.util.config.NLPConfig;
 import edu.emory.mathcs.nlp.component.util.eval.Eval;
@@ -38,7 +36,7 @@ public class DEPNeuralNetworkTrain extends NerualNetworkTrain<DEPNode,String,DEP
     }
 
     protected FeatureTemplate<DEPNode,DEPState<DEPNode>> createFeatureTemplate(){
-        return new DEPFeatureTemplate2();
+        return new DEPFeatureTemplateZhang();
 //        return new VecFeatureTemplate();
     }
 

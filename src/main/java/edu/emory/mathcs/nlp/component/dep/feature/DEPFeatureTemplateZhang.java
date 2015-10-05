@@ -6,7 +6,8 @@ import edu.emory.mathcs.nlp.component.util.feature.*;
 /**
  * Created by Song on 9/29/2015.
  */
-public class DEPFeatureTemplate1 extends DEPFeatureTemplate {
+public class DEPFeatureTemplateZhang extends DEPFeatureTemplate {
+
     protected void init(){
             // lemma features
             add(new FeatureItem<>(Source.i, -1, Field.lemma));
