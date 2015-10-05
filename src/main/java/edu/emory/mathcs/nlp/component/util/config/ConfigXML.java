@@ -64,7 +64,9 @@ public interface ConfigXML
 	String MAX_TOLERANCE	= "max_tolerance";
 	String LOSS_TYPE		= "loss_type";
 	String THREAD_SIZE		= "thread_size";
-	
+	String HIDDEN_LAYER		= "hidden_layer";
+
+
 //	========================== ALGORITHMS ==========================
 	
 	String PERCEPTRON			= "perceptron";

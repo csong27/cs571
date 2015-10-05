@@ -46,6 +46,7 @@ public enum Field
 	subcategorization,
 	subcategorization1,
 	subcategorization2,
+	norm,
 	path,
 	
 	// more

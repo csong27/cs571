@@ -93,6 +93,10 @@ public class DEPFeatureTemplate1 extends DEPFeatureTemplate {
             //sub categorization
             add(new FeatureItem<>(Source.i, Field.subcategorization, Direction.all));
             add(new FeatureItem<>(Source.j, Field.subcategorization, Direction.all));
+            add(new FeatureItem<>(Source.i, Field.subcategorization1, Direction.all));
+            add(new FeatureItem<>(Source.j, Field.subcategorization1, Direction.all));
+            add(new FeatureItem<>(Source.i, Field.subcategorization2, Direction.all));
+            add(new FeatureItem<>(Source.j, Field.subcategorization2, Direction.all));
         /*bigram features*/
             add(new FeatureItem<>(Source.i,  0, Field.lemma), new FeatureItem<>(Source.i,  0, Field.pos_tag));
             add(new FeatureItem<>(Source.j,  0, Field.lemma), new FeatureItem<>(Source.j,  0, Field.pos_tag));
@@ -115,37 +119,19 @@ public class DEPFeatureTemplate1 extends DEPFeatureTemplate {
             add(new FeatureItem<>(Source.j,  0, Field.lemma), new FeatureItem<>(Source.i, Field.path));
             add(new FeatureItem<>(Source.j,  0, Field.pos_tag), new FeatureItem<>(Source.i, Field.path));
             //S0wsr;S0psr;S0wsl;S0psl;N0wsl;N0psl;
-//            add(new FeatureItem<>(Source.i,  0, Field.lemma),
-//                    new FeatureItem<>(Source.i, Field.subcategorization, Direction.right));
-//            add(new FeatureItem<>(Source.i,  0, Field.pos_tag),
-//                    new FeatureItem<>(Source.i, Field.subcategorization, Direction.right));
-//            add(new FeatureItem<>(Source.i,  0, Field.lemma),
-//                    new FeatureItem<>(Source.i, Field.subcategorization, Direction.left));
-//            add(new FeatureItem<>(Source.i,  0, Field.pos_tag),
-//                    new FeatureItem<>(Source.i, Field.subcategorization, Direction.left));
-//            add(new FeatureItem<>(Source.j,  0, Field.lemma),
-//                    new FeatureItem<>(Source.j, Field.subcategorization, Direction.left));
-//            add(new FeatureItem<>(Source.j,  0, Field.pos_tag),
-//                    new FeatureItem<>(Source.j, Field.subcategorization, Direction.left));
-//            //try this
-//        add(new FeatureItem<>(Source.i,  0, Field.lemma), new FeatureItem<>(Source.i, Field.length, true));
-//        add(new FeatureItem<>(Source.j,  0, Field.lemma), new FeatureItem<>(Source.i, Field.length, true));
-//        add(new FeatureItem<>(Source.i,  0, Field.lemma), new FeatureItem<>(Source.i, Field.length, false));
-//        add(new FeatureItem<>(Source.j,  0, Field.lemma), new FeatureItem<>(Source.i, Field.length, false));
-//        add(new FeatureItem<>(Source.i,  0, Field.pos_tag), new FeatureItem<>(Source.i, Field.length, true));
-//        add(new FeatureItem<>(Source.j,  0, Field.pos_tag), new FeatureItem<>(Source.i, Field.length, true));
-//        add(new FeatureItem<>(Source.i,  0, Field.pos_tag), new FeatureItem<>(Source.i, Field.length, false));
-//        add(new FeatureItem<>(Source.j,  0, Field.pos_tag), new FeatureItem<>(Source.i, Field.length, false));
-//
-//        add(new FeatureItem<>(Source.i,  0, Field.lemma), new FeatureItem<>(Source.i, Field.num_of_operation, true));
-//        add(new FeatureItem<>(Source.j,  0, Field.lemma), new FeatureItem<>(Source.i, Field.num_of_operation, true));
-//        add(new FeatureItem<>(Source.i,  0, Field.lemma), new FeatureItem<>(Source.i, Field.num_of_operation, false));
-//        add(new FeatureItem<>(Source.j,  0, Field.lemma), new FeatureItem<>(Source.i, Field.num_of_operation, false));
-//        add(new FeatureItem<>(Source.i,  0, Field.pos_tag), new FeatureItem<>(Source.i, Field.num_of_operation, true));
-//        add(new FeatureItem<>(Source.j,  0, Field.pos_tag), new FeatureItem<>(Source.i, Field.num_of_operation, true));
-//        add(new FeatureItem<>(Source.i,  0, Field.pos_tag), new FeatureItem<>(Source.i, Field.num_of_operation, false));
-//        add(new FeatureItem<>(Source.j,  0, Field.pos_tag), new FeatureItem<>(Source.i, Field.num_of_operation, false));
-        /*trigram features*/
+            add(new FeatureItem<>(Source.i,  0, Field.lemma),
+                    new FeatureItem<>(Source.i, Field.subcategorization2, Direction.right));
+            add(new FeatureItem<>(Source.i,  0, Field.pos_tag),
+                    new FeatureItem<>(Source.i, Field.subcategorization2, Direction.right));
+            add(new FeatureItem<>(Source.i,  0, Field.lemma),
+                    new FeatureItem<>(Source.i, Field.subcategorization2, Direction.left));
+            add(new FeatureItem<>(Source.i,  0, Field.pos_tag),
+                    new FeatureItem<>(Source.i, Field.subcategorization2, Direction.left));
+            add(new FeatureItem<>(Source.j,  0, Field.lemma),
+                    new FeatureItem<>(Source.j, Field.subcategorization2, Direction.left));
+            add(new FeatureItem<>(Source.j,  0, Field.pos_tag),
+                    new FeatureItem<>(Source.j, Field.subcategorization2, Direction.left));
+            /*trigram features*/
             //S0wN0wp;S0wpN0p;S0pN0wp
             add(    new FeatureItem<>(Source.i,  0, Field.lemma),
                     new FeatureItem<>(Source.j,  0, Field.lemma),
@@ -198,6 +184,39 @@ public class DEPFeatureTemplate1 extends DEPFeatureTemplate {
             add(    new FeatureItem<>(Source.j,  0, Field.pos_tag),
                     new FeatureItem<>(Source.j,  Relation.lmd, 0, Field.pos_tag),
                     new FeatureItem<>(Source.j,  Relation.lmd2, 0, Field.pos_tag));
+        //stanford
+//        //s1.wt◦s2.wt;s1.wt◦s2.w;s1.wts2.t;s1.w◦s2.wt;s1.t◦s2.wt;s1.w◦s2.w;s1.t◦s2.t;s1.t◦b1.
+//        add(new FeatureItem<>(Source.i, 0, Field.lemma), new FeatureItem<>(Source.i, 0, Field.pos_tag),
+//                new FeatureItem<>(Source.k, 1, Field.lemma), new FeatureItem<>(Source.k, 1, Field.pos_tag));
+//        add(new FeatureItem<>(Source.i, 0, Field.lemma), new FeatureItem<>(Source.i, 0, Field.pos_tag),
+//                new FeatureItem<>(Source.k, 1, Field.lemma));
+//        add(new FeatureItem<>(Source.i, 0, Field.lemma), new FeatureItem<>(Source.i, 0, Field.pos_tag),
+//                new FeatureItem<>(Source.k, 1, Field.pos_tag));
+//        add(new FeatureItem<>(Source.i, 0, Field.lemma),
+//                new FeatureItem<>(Source.k, 1, Field.lemma), new FeatureItem<>(Source.k, 1, Field.pos_tag));
+//        add(new FeatureItem<>(Source.i, 0, Field.pos_tag),
+//                new FeatureItem<>(Source.k, 1, Field.lemma), new FeatureItem<>(Source.k, 1, Field.pos_tag));
+//        add(new FeatureItem<>(Source.i, 0, Field.lemma), new FeatureItem<>(Source.k, 1, Field.lemma));
+//        add(new FeatureItem<>(Source.i, 0, Field.pos_tag), new FeatureItem<>(Source.k, 1, Field.pos_tag));
+//        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.j,  0, Field.lemma));
+//        //s2.t◦s1.t◦b1.t; s2.t◦s1.t◦lc1(s1).t; s2.t◦s1.t◦rc1(s1).t; s2.t◦s1.t◦lc1(s2).t; s2.t◦s1.t◦rc1(s2).t;
+//        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.pos_tag),
+//                new FeatureItem<>(Source.j,  0, Field.pos_tag));
+//        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.pos_tag),
+//                new FeatureItem<>(Source.i,  Relation.rmd, 0, Field.pos_tag));
+//        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.pos_tag),
+//                new FeatureItem<>(Source.i,  Relation.lmd, 0, Field.pos_tag));
+//        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.pos_tag),
+//                new FeatureItem<>(Source.k,  Relation.rmd, 1, Field.pos_tag));
+//        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.pos_tag),
+//                new FeatureItem<>(Source.k,  Relation.lmd, 1, Field.pos_tag));
+//        //s2.t◦s1.w◦rc1(s2).t; s2.t◦s1.w◦lc1(s1).t; s2.t◦s1.w◦b1.t
+//        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.lemma),
+//                new FeatureItem<>(Source.k,  Relation.rmd, 1, Field.pos_tag));
+//        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.lemma),
+//                new FeatureItem<>(Source.i,  Relation.lmd, 0, Field.pos_tag));
+//        add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.lemma),
+//                new FeatureItem<>(Source.j, 0, Field.pos_tag));
 
     }
 }

@@ -44,7 +44,17 @@ public abstract class DEPFeatureTemplate extends FeatureTemplate<DEPNode,DEPStat
             case subcategorization: return node.getSubcategorization((Direction) item.value, Field.dependency_label);
             case subcategorization1: return node.getSubcategorization((Direction) item.value, Field.lemma);
             case subcategorization2: return node.getSubcategorization((Direction) item.value, Field.pos_tag);
+            case norm: return getNorm(node);
             default: throw new IllegalArgumentException("Unsupported feature: "+item.field);
+        }
+    }
+
+    private String getNorm(DEPNode node) {
+        float[] v1 = vectorReader.getVector(getKey(node));
+        if(v1 == null) return null;
+        else {
+            double norm = euclideanDistance(v1, new float[v1.length]);
+            return String.format("%5.1f", norm);
         }
     }
 
@@ -182,10 +192,10 @@ public abstract class DEPFeatureTemplate extends FeatureTemplate<DEPNode,DEPStat
     }
 
     private double euclideanDistance(float[] vectorA, float[] vectorB) {
-        double Sum = 0.0;
-        for(int i=0;i<vectorA.length;i++)
-            Sum = Sum + Math.pow((vectorA[i]-vectorB[i]),2.0);
-        return Math.sqrt(Sum);
+        double sum = 0.0;
+        for(int i = 0; i < vectorA.length; i++)
+            sum = sum + Math.pow((vectorA[i] - vectorB[i]), 2.0);
+        return Math.sqrt(sum);
     }
 
     protected String getKey(DEPNode node){

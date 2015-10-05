@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
 
+import edu.emory.mathcs.nlp.deeplearning.network.FeedForwardNeuralNetwork;
 import edu.emory.mathcs.nlp.learn.util.Instance;
 import edu.emory.mathcs.nlp.learn.util.Prediction;
 import edu.emory.mathcs.nlp.learn.util.StringInstance;
@@ -43,6 +44,7 @@ public class StringModel implements Serializable
 	private LabelMap              label_map;
 	private FeatureMap            feature_map;
 	private WeightVector          weight_vector;
+	private FeedForwardNeuralNetwork neural_network;
 	private float                 bias;
 	
 	public StringModel(WeightVector vector)
@@ -62,7 +64,15 @@ public class StringModel implements Serializable
 	{
 		this.bias = bias;
 	}
-	
+
+	public boolean isNeuralNetwork(){
+		return neural_network != null;
+	}
+
+	public void setNeuralNetwork(FeedForwardNeuralNetwork neural_network){
+		this.neural_network = neural_network;
+	}
+
 	public void addInstance(StringInstance instance)
 	{
 		label_map.add(instance.getLabel());
@@ -138,8 +148,15 @@ public class StringModel implements Serializable
 	
 	public StringPrediction predictBest(StringVector x)
 	{
-		Prediction p = weight_vector.predictBest(toSparseVector(x));
-		return new StringPrediction(label_map.getLabel(p.getLabel()), p.getScore());
+		Prediction p;
+		if(!isNeuralNetwork()) {
+			p = weight_vector.predictBest(toSparseVector(x));
+			return new StringPrediction(label_map.getLabel(p.getLabel()), p.getScore());
+		}
+		else{
+			p = neural_network.predictBest(toSparseVector(x));
+			return new StringPrediction(label_map.getLabel(p.getLabel()), p.getScore());
+		}
 	}
 	
 	public String trainInfo()

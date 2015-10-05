@@ -15,6 +15,7 @@
  */
 package edu.emory.mathcs.nlp.component.util.config;
 
+import edu.emory.mathcs.nlp.deeplearning.network.FeedForwardNeuralNetwork;
 import edu.emory.mathcs.nlp.learn.optimization.sgd.AdaGradRegression;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -133,6 +134,15 @@ public abstract class NLPConfig<N> implements ConfigXML
 		}
 		
 		throw new IllegalArgumentException(algorithm+" is not a valid algorithm name.");
+	}
+
+	public FeedForwardNeuralNetwork getNeuralNetwork(StringModel model, int index){
+		Element eOptimizer = XMLUtils.getElementByTagName(xml, OPTIMIZER, index);
+		double  learningRate = XMLUtils.getDoubleTextContentFromFirstElementByTagName(eOptimizer, LEARNING_RATE);
+		int hidden = XMLUtils.getIntegerTextContentFromFirstElementByTagName(eOptimizer, HIDDEN_LAYER);
+		initOptimizer(eOptimizer, model);
+		return new FeedForwardNeuralNetwork(learningRate, model.getWeightVector().featureSize(),
+				model.getWeightVector().labelSize(), hidden);
 	}
 	
 	private void initOptimizer(Element eOptimizer, StringModel model)
