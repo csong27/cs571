@@ -158,7 +158,17 @@ public class StringModel implements Serializable
 			return new StringPrediction(label_map.getLabel(p.getLabel()), p.getScore());
 		}
 	}
-	
+
+	public StringPrediction predictSecondBest(StringVector x)
+	{
+		Prediction p;
+		if(!isNeuralNetwork()) {
+			p = weight_vector.predictTop2(toSparseVector(x));
+			return new StringPrediction(label_map.getLabel(p.getLabel()), p.getScore());
+		}
+		return null;
+	}
+
 	public String trainInfo()
 	{
 		StringBuilder build = new StringBuilder();

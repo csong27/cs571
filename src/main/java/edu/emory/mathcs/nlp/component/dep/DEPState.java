@@ -129,8 +129,6 @@ public class DEPState<N extends DEPNode> extends NLPState<N, String> {
         }
     }
 
-
-
     /** @return true if no more state can be processed; otherwise, false. */
     public boolean isTerminate(){
         return inputIndex >= inputSize;
@@ -138,7 +136,7 @@ public class DEPState<N extends DEPNode> extends NLPState<N, String> {
 
     // should return head arc in the gold tree, i.e. not the oracle function
     public String getGoldLabel(){
-        return getGoldMoveLabel();
+        return getGoldMoveLabel2();
     }
 
     public String setLabel(String label){

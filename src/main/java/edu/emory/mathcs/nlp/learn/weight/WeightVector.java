@@ -169,4 +169,7 @@ public abstract class WeightVector implements Serializable
 
 	/** @return the best predicated label with respect to x. */
 	public abstract Prediction predictBest(Vector x);
+
+	public abstract Prediction predictTop2(Vector x);
+
 }

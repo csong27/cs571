@@ -108,4 +108,9 @@ public class BinomialWeightVector extends WeightVector
 
 		return new Prediction(label, score);
 	}
+
+	public Prediction predictTop2(Vector x){
+		return null;
+	};
+
 }

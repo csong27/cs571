@@ -13,7 +13,7 @@
     <optimizer>
         <algorithm>adagrad-mini-batch</algorithm>
         <label_cutoff>4</label_cutoff>
-        <feature_cutoff>10</feature_cutoff>
+        <feature_cutoff>7</feature_cutoff>
         <reset_weights>false</reset_weights>
         <average>false</average>
         <batch_ratio>0.1</batch_ratio>

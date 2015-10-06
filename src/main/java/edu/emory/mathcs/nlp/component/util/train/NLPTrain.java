@@ -191,7 +191,7 @@ public abstract class NLPTrain<N,L,S extends NLPState<N,L>>
 		double patienceIncrease = 1.3;
 		double improveThreshold = 1.0025;
 
-		for (int epoch=1; epoch < maxEpoch && epoch < patience;epoch++)
+		for (int epoch=1; epoch < maxEpoch && epoch <= patience;epoch++)
 		{
 			eval.clear();
 			optimizer.train(model.getInstanceList());
@@ -204,9 +204,10 @@ public abstract class NLPTrain<N,L,S extends NLPState<N,L>>
 				bestScore = currScore;
 				bestWeight = model.getWeightVector().toArray().clone();
 			}
-			if(currScore < prevScore){
+			if(currScore < prevScore)	//lose patience
 				patience--;
-			}
+			else if(currScore > prevScore && patience == epoch)
+				patience++; 	//keep running if improving
 			prevScore = currScore;
 			BinUtils.LOG.info(String.format("at epoch %3d, patience %3d: %s\n", epoch, patience, eval.scores()));
 		}

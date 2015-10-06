@@ -2,6 +2,7 @@ package edu.emory.mathcs.nlp.bin;
 
 import edu.emory.mathcs.nlp.common.util.IOUtils;
 import edu.emory.mathcs.nlp.component.dep.*;
+import edu.emory.mathcs.nlp.component.dep.feature.DEPFeatureTemplateBaseline;
 import edu.emory.mathcs.nlp.component.dep.feature.DEPFeatureTemplateExperiment;
 import edu.emory.mathcs.nlp.component.dep.feature.DEPFeatureTemplateZhang;
 import edu.emory.mathcs.nlp.component.dep.feature.DEPFeatureTemplateZhangAndStanford;
@@ -41,7 +42,7 @@ public class DEPTrain extends NLPTrain<DEPNode,String,DEPState<DEPNode>> {
     }
 
     protected FeatureTemplate<DEPNode,DEPState<DEPNode>> createFeatureTemplate(){
-        return new DEPFeatureTemplateExperiment();
+        return new DEPFeatureTemplateBaseline();
 //        return new VecFeatureTemplate();
     }
 

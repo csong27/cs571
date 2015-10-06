@@ -66,7 +66,7 @@ public class DEPParser<N extends DEPNode> extends NLPComponent<N, String, DEPSta
 //            if(isEvaluate())
 //                System.out.println(label);
             state.setLabel(label);
-            state.next2();
+            state.next();
         }
         if (isEvaluate()) state.evaluate(eval);
     }
