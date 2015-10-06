@@ -199,15 +199,14 @@ public abstract class NLPTrain<N,L,S extends NLPState<N,L>>
 			currScore = eval.score();
 
 			if(currScore > bestScore){
-				if(currScore > bestScore * improveThreshold && epoch > 1)	//increase iteration if improvement is strong enough
+				if(currScore > bestScore * improveThreshold && epoch > 1)	//major increase if improvement is strong enough
 					patience = patience * patienceIncrease > maxEpoch ? maxEpoch : (int)(patience * patienceIncrease);
+				else if(epoch > 1)	patience++;	//minor increase
 				bestScore = currScore;
 				bestWeight = model.getWeightVector().toArray().clone();
 			}
 			if(currScore < prevScore)	//lose patience
 				patience--;
-			else if(currScore > prevScore && patience == epoch)
-				patience++; 	//keep running if improving
 			prevScore = currScore;
 			BinUtils.LOG.info(String.format("at epoch %3d, patience %3d: %s\n", epoch, patience, eval.scores()));
 		}

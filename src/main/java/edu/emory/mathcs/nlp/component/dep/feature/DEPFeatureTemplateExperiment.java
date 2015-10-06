@@ -218,7 +218,6 @@ public class DEPFeatureTemplateExperiment extends DEPFeatureTemplate {
         add(new FeatureItem<>(Source.k, 1, Field.pos_tag), new FeatureItem<>(Source.i, 0, Field.lemma),
                 new FeatureItem<>(Source.j, 0, Field.pos_tag));
 
-
         //try norm
         add(new FeatureItem<>(Source.i, 0, Field.norm));
         add(new FeatureItem<>(Source.j, 0, Field.norm));
@@ -235,6 +234,12 @@ public class DEPFeatureTemplateExperiment extends DEPFeatureTemplate {
         add(new FeatureItem<>(Source.i, Relation.lmd, 0, Field.norm));
         add(new FeatureItem<>(Source.i, Relation.rmd, 0, Field.norm));
         add(new FeatureItem<>(Source.j, Relation.lmd, 0, Field.norm));
+
+        add(new FeatureItem<>(Source.i, Relation.h2, 0, Field.norm));
+        add(new FeatureItem<>(Source.i, Relation.lmd2, 0, Field.norm));
+        add(new FeatureItem<>(Source.i, Relation.rmd2, 0, Field.norm));
+        add(new FeatureItem<>(Source.j, Relation.lmd2, 0, Field.norm));
+
     }
 
 

@@ -42,7 +42,7 @@ public class DEPTrain extends NLPTrain<DEPNode,String,DEPState<DEPNode>> {
     }
 
     protected FeatureTemplate<DEPNode,DEPState<DEPNode>> createFeatureTemplate(){
-        return new DEPFeatureTemplateBaseline();
+        return new DEPFeatureTemplateExperiment();
 //        return new VecFeatureTemplate();
     }
 
