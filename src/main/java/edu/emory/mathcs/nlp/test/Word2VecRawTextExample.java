@@ -25,7 +25,6 @@ public class Word2VecRawTextExample {
 
     public static void main(String[] args) throws Exception {
 
-//        String filePath = new ClassPathResource("raw_sentences.txt").getFile().getAbsolutePath();
         String filePath = "train.txt";
         log.info("Load & Vectorize Sentences....");
         // Strip white space before and after for each line

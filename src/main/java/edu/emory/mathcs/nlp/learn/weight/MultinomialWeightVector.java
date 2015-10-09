@@ -89,15 +89,18 @@ public class MultinomialWeightVector extends WeightVector
 	{
 		double[] scores = new double[label_size];
 		int i, index;
-		
 		for (IndexValuePair p : x)
 		{
 			if (p.getIndex() < feature_size)
 			{
 				index = indexOf(p.getIndex());
-				
-				for (i=0; i<label_size; i++)
-					scores[i] += weight_vector[index+i] * p.getValue();	
+				for (i=0; i<label_size; i++) {
+					try {
+						scores[i] += weight_vector[index + i] * p.getValue();
+					} catch (Exception e){
+						continue;
+					}
+				}
 			}
 		}
 		

@@ -107,6 +107,7 @@ public abstract class NLPTrain<N,L,S extends NLPState<N,L>>
 			component.setFlag(NLPFlag.EVALUATE);
 			prevScore = currScore;
 			currScore = train(reader, developFiles, component, configuration);
+
 			if (dagger == null){
 				bestScore = currScore;
 				break;	// no aggregating
@@ -124,6 +125,7 @@ public abstract class NLPTrain<N,L,S extends NLPState<N,L>>
 				bestIter  = iter;
 			}
 		}
+		List<String>  testFiles = FileUtils.getFileList("", "*");
 
 		BinUtils.LOG.info(String.format("\nFinal score: %5.2f\n", bestScore));
 	}
@@ -188,7 +190,7 @@ public abstract class NLPTrain<N,L,S extends NLPState<N,L>>
 
 		int maxEpoch = 50;
 		int patience = 10;
-		double patienceIncrease = 1.3;
+		double patienceIncrease = 1.35;
 		double improveThreshold = 1.0025;
 
 		for (int epoch=1; epoch < maxEpoch && epoch <= patience;epoch++)
@@ -201,7 +203,6 @@ public abstract class NLPTrain<N,L,S extends NLPState<N,L>>
 			if(currScore > bestScore){
 				if(currScore > bestScore * improveThreshold && epoch > 1)	//major increase if improvement is strong enough
 					patience = patience * patienceIncrease > maxEpoch ? maxEpoch : (int)(patience * patienceIncrease);
-				else if(epoch > 1)	patience++;	//minor increase
 				bestScore = currScore;
 				bestWeight = model.getWeightVector().toArray().clone();
 			}

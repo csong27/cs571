@@ -234,11 +234,17 @@ public class DEPFeatureTemplateExperiment extends DEPFeatureTemplate {
         add(new FeatureItem<>(Source.i, Relation.lmd, 0, Field.norm));
         add(new FeatureItem<>(Source.i, Relation.rmd, 0, Field.norm));
         add(new FeatureItem<>(Source.j, Relation.lmd, 0, Field.norm));
+//
+//        add(new FeatureItem<>(Source.i, 0, Field.norm), new FeatureItem<>(Source.i, 0, Field.lemma));
+//        add(new FeatureItem<>(Source.j, 0, Field.norm), new FeatureItem<>(Source.j, 0, Field.lemma));
 
-        add(new FeatureItem<>(Source.i, Relation.h2, 0, Field.norm));
-        add(new FeatureItem<>(Source.i, Relation.lmd2, 0, Field.norm));
-        add(new FeatureItem<>(Source.i, Relation.rmd2, 0, Field.norm));
-        add(new FeatureItem<>(Source.j, Relation.lmd2, 0, Field.norm));
+//        add(new FeatureItem<>(Source.i, 1, Field.norm), new FeatureItem<>(Source.i, 1, Field.lemma));
+//        add(new FeatureItem<>(Source.j, 1, Field.norm), new FeatureItem<>(Source.j, 1, Field.lemma));
+//        add(new FeatureItem<>(Source.k, 1, Field.norm), new FeatureItem<>(Source.k, 1, Field.lemma));
+//
+//        add(new FeatureItem<>(Source.i, 2, Field.norm), new FeatureItem<>(Source.i, 2, Field.lemma));
+//        add(new FeatureItem<>(Source.j, 2, Field.norm), new FeatureItem<>(Source.j, 2, Field.lemma));
+//        add(new FeatureItem<>(Source.k, 2, Field.norm), new FeatureItem<>(Source.k, 2, Field.lemma));
 
     }
 

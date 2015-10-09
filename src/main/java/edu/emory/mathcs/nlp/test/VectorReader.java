@@ -3,6 +3,7 @@ package edu.emory.mathcs.nlp.test;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +11,8 @@ import java.util.Map;
 /**
  * Created by Song on 9/29/2015.
  */
-public class VectorReader {
+public class VectorReader implements Serializable {
+    private static final long serialVersionUID = 2546728532759275929L;
     private Map<String, float[]> wordVecMap;
 
     public VectorReader(){
@@ -50,6 +52,6 @@ public class VectorReader {
 
     public static void main(String[] args) throws Exception{
         VectorReader vr = new VectorReader();
-        System.out.println(Arrays.toString(vr.getVector("null")));
+        System.out.println(vr.getMap().size());
     }
 }
