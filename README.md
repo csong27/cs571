@@ -4,3 +4,4 @@ CS571: Natural Language Processing
 * [Part of Speech Tagging on WSJ](../../wiki/Part of Speech Tagging on WSJ).
 * [Word2Vec Explained](../../wiki/Word2Vec Explained).
 * [Dependency Parsing](../../wiki/Dependency Parsing).
+* [Named Entity Tagging](../../wiki/Named Entity Tagging).
