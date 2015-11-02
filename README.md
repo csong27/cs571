@@ -5,3 +5,4 @@ CS571: Natural Language Processing
 * [Word2Vec Explained](../../wiki/Word2Vec Explained).
 * [Dependency Parsing](../../wiki/Dependency Parsing).
 * [Named Entity Tagging](../../wiki/Named Entity Tagging).
+* [Semantic Role Labeling](../../wiki/Semantic Role Labeling).
