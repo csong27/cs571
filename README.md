@@ -7,3 +7,4 @@ CS571: Natural Language Processing
 * [Named Entity Tagging](../../wiki/Named Entity Tagging).
 * [Semantic Role Labeling](../../wiki/Semantic Role Labeling).
 * [Homework 2](https://github.com/csong27/emorynlp/wiki/Named-Entity-Tagging-Homework-2).
+* [Gazetteers](../../wiki/Gazetteers).
